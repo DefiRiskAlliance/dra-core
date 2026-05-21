@@ -23,6 +23,13 @@ class RaterBase(ABC):
     @abstractmethod
     def name(self) -> str: ...
 
+    @property
+    def organization(self) -> str | None:
+        """Slug of the organisation behind this rater. When it matches the
+        rated protocol's ``protocol_organization`` the engine drops the
+        rater's attestations to avoid self-rating."""
+        return None
+
     @abstractmethod
     def attest(self, ctx: StrategyContext) -> list[CriterionAttestation]: ...
 

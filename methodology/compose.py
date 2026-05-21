@@ -19,6 +19,10 @@ _MODE_LAYERS: dict[CompositionMode, tuple[Layer, ...]] = {
     "A": ("asset", "market", "vault"),
     "B": ("asset", "vault"),
     "C": ("asset", "market"),
+    # Mode D (meta-vault) shares the (asset, vault) layer pair with Mode B by
+    # design — the *meta-vault's own* layers. The underlying vaults are folded
+    # in separately via the ``underlying_vault_stages`` argument to
+    # ``strategy_stage``; do not look for them here.
     "D": ("asset", "vault"),
 }
 

@@ -15,41 +15,43 @@ if str(ROOT) not in sys.path:
 
 from methodology import (
     CRITERIA,
-    CriterionAttestation,
     DRAEngine,
+    ManualOverride,
     StrategyContext,
 )
 
 
 def main() -> None:
-    attestations = [
-        CriterionAttestation(
+    overrides = [
+        ManualOverride(
             layer=c.layer,
             component=c.component,
             criterion_id=c.id,
             verdict="verified",
-            source="manual",
-            evidence="reviewer-supplied baseline",
+            operator="alice@example.org",
+            rationale="reviewer-supplied baseline",
+            rationale_ref="https://github.com/example/agg_scoring_dra/issues/1",
         )
         for c in CRITERIA
         if c.stage == 1
     ]
 
-    ctx = StrategyContext(mode="C", manual_attestations=attestations)
-    engine = DRAEngine(raters=[])
+    ctx = StrategyContext(mode="C", manual_overrides=overrides)
+    engine = DRAEngine(raters=[], manual_override_log_path=ROOT / "manual-overrides.jsonl")
     result = engine.score(ctx)
 
     print(f"strategy_stage = {result.strategy_stage}")
     print(f"layer_stages   = {result.layer_stages}")
     print("If we now violate one criterion, the layer drops:")
-    ctx.manual_attestations.append(
-        CriterionAttestation(
+    ctx.manual_overrides.append(
+        ManualOverride(
             layer="market",
             component="security",
             criterion_id="market.security.s1.audited",
             verdict="violated",
-            source="manual",
-            evidence="found unresolved critical finding",
+            operator="alice@example.org",
+            rationale="found unresolved critical finding",
+            rationale_ref="https://github.com/example/agg_scoring_dra/issues/2",
         )
     )
     result = engine.score(ctx)

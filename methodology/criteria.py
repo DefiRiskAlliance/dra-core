@@ -27,6 +27,7 @@ CRITERIA: tuple[Criterion, ...] = (
         component="security",
         stage=1,
         description="No critical exploit affecting the token contract in the last 12 months.",
+        max_age_days=180,
     ),
     Criterion(
         id="asset.security.s2.lindy_3y_clean",
@@ -56,6 +57,7 @@ CRITERIA: tuple[Criterion, ...] = (
         component="operations",
         stage=1,
         description="Reserves attested at least quarterly by an independent auditor (or fully on-chain collateral).",
+        max_age_days=120,
     ),
     Criterion(
         id="asset.operations.s2.reserves_realtime",
@@ -63,6 +65,7 @@ CRITERIA: tuple[Criterion, ...] = (
         component="operations",
         stage=2,
         description="Daily or real-time proof of reserves with full asset-level breakdown.",
+        max_age_days=30,
     ),
     Criterion(
         id="asset.operations.s2.regulated_issuer",
@@ -78,6 +81,7 @@ CRITERIA: tuple[Criterion, ...] = (
         component="strategy_economics",
         stage=1,
         description="For stables: max peg deviation < 1% over the last 12 months. For non-stables: market cap > $100M and active multi-venue liquidity.",
+        max_age_days=30,
     ),
     Criterion(
         id="asset.strategy_economics.s1.collateral_adequate",
@@ -85,6 +89,7 @@ CRITERIA: tuple[Criterion, ...] = (
         component="strategy_economics",
         stage=1,
         description="Asset is fully collateralised (cash-equivalent reserves) or fully decentralised with overcollateralisation.",
+        max_age_days=90,
     ),
     Criterion(
         id="asset.strategy_economics.s2.peg_or_market_stable_36m",
@@ -92,6 +97,7 @@ CRITERIA: tuple[Criterion, ...] = (
         component="strategy_economics",
         stage=2,
         description="Peg/economic resilience demonstrated through at least 3 years and one major market dislocation.",
+        max_age_days=90,
     ),
     Criterion(
         id="asset.strategy_economics.s2.deep_liquidity",
@@ -99,6 +105,7 @@ CRITERIA: tuple[Criterion, ...] = (
         component="strategy_economics",
         stage=2,
         description="Deep on-chain liquidity (>$50M depth at <1% slippage) across multiple independent venues.",
+        max_age_days=30,
     ),
     # --- MARKET × SECURITY ---
     Criterion(
@@ -143,6 +150,7 @@ CRITERIA: tuple[Criterion, ...] = (
         component="operations",
         stage=1,
         description="Price feeds use a tier-1 oracle (Chainlink, RedStone, Pyth, or equivalent).",
+        max_age_days=90,
     ),
     Criterion(
         id="market.operations.s2.timelock_7d_or_immutable",
@@ -157,6 +165,7 @@ CRITERIA: tuple[Criterion, ...] = (
         component="operations",
         stage=2,
         description="Dual or redundant oracle set-up with sanity checks, deviation thresholds, and fallback paths.",
+        max_age_days=90,
     ),
     # --- MARKET × STRATEGY ECONOMICS ---
     Criterion(
@@ -165,6 +174,7 @@ CRITERIA: tuple[Criterion, ...] = (
         component="strategy_economics",
         stage=1,
         description="LTV, liquidation thresholds, and supply/borrow caps are conservative relative to collateral volatility.",
+        max_age_days=90,
     ),
     Criterion(
         id="market.strategy_economics.s1.healthy_utilization",
@@ -172,6 +182,7 @@ CRITERIA: tuple[Criterion, ...] = (
         component="strategy_economics",
         stage=1,
         description="Utilisation managed below 95% with caps in place to prevent withdrawal failures.",
+        max_age_days=30,
     ),
     Criterion(
         id="market.strategy_economics.s2.proven_under_stress",
@@ -186,6 +197,7 @@ CRITERIA: tuple[Criterion, ...] = (
         component="strategy_economics",
         stage=2,
         description="Multi-collateral set-up with isolation modes or e-mode segregation for risky assets.",
+        max_age_days=90,
     ),
     # --- VAULT × SECURITY ---
     Criterion(
@@ -201,6 +213,7 @@ CRITERIA: tuple[Criterion, ...] = (
         component="security",
         stage=1,
         description="No outstanding critical or high-severity vulnerabilities reported by any monitor.",
+        max_age_days=180,
     ),
     Criterion(
         id="vault.security.s2.multi_audit_bounty",

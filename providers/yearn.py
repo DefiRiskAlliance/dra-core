@@ -78,6 +78,10 @@ class YearnCurationRater(RaterBase):
     def name(self) -> str:
         return "yearn_curation"
 
+    @property
+    def organization(self) -> str | None:
+        return "yearn"
+
     def supported_criteria(self) -> set[str]:
         return {
             *VAULT_SEC_S1, *VAULT_SEC_S2, *VAULT_OPS_S1, *VAULT_OPS_S2, *VAULT_ECO_S1, *VAULT_ECO_S2,

@@ -9,9 +9,10 @@ from .criteria import (
     get_criterion,
 )
 from .engine import DRAEngine, DRAResult, Rater
-from .entities import StrategyContext
+from .entities import ManualOverride, StrategyContext
 from .merge import resolve_attestations
 from .types import (
+    COMPONENT_LABELS,
     COMPONENTS,
     LAYERS,
     STAGES,
@@ -28,6 +29,7 @@ from .types import (
 )
 
 __all__ = [
+    "COMPONENT_LABELS",
     "COMPONENTS",
     "CRITERIA",
     "Component",
@@ -39,6 +41,7 @@ __all__ = [
     "DRAResult",
     "LAYERS",
     "Layer",
+    "ManualOverride",
     "Rater",
     "STAGES",
     "Stage",
