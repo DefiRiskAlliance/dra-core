@@ -159,6 +159,13 @@
             color: #ffffff;
             flex-shrink: 0;
             box-shadow: 0 0 0 1px rgba(255,255,255,0.06);
+            overflow: hidden;
+        }
+        .name-block .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
 
         .name-block .text { display: flex; flex-direction: column; min-width: 0; }
@@ -696,9 +703,9 @@
         }
 
         const PROTOCOL_META = {
-            morpho: { letter: 'M', color: '#2470ff' },
-            aave:   { letter: 'A', color: '#b6509e' },
-            yearn:  { letter: 'Y', color: '#0657f9' },
+            morpho: { letter: 'M', color: '#2470ff', logo: 'assets/protocols/morpho.webp' },
+            aave:   { letter: 'A', color: '#b6509e', logo: 'assets/protocols/aave.webp' },
+            yearn:  { letter: 'Y', color: '#0657f9', logo: 'assets/protocols/yearn.webp' },
             spark:  { letter: 'S', color: '#f59e0b' },
             compound: { letter: 'C', color: '#00d395' },
         };
@@ -771,7 +778,7 @@
                             <td class="rank">${String(idx + 1).padStart(2, '0')}</td>
                             <td>
                                 <a href="#${e.id}" class="name-block" style="text-decoration:none;color:inherit;">
-                                    <span class="avatar" style="background:${meta.color}">${meta.letter}</span>
+                                    <span class="avatar" style="background:${meta.logo ? '#0a0a0a' : meta.color}">${meta.logo ? `<img src="${meta.logo}" alt="" loading="lazy">` : meta.letter}</span>
                                     <span class="text">
                                         <span class="label">${split.title}</span>
                                         ${split.sub ? `<span class="sub">${split.sub}</span>` : ''}
