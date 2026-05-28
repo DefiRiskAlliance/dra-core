@@ -191,7 +191,8 @@ def _serialise(label: str, entry: dict[str, Any], res: DRAResult) -> dict[str, A
         sources[att.source] = sources.get(att.source, 0) + 1
 
     unsatisfied = []
-    blockers = res.unsatisfied_criteria()
+    applicable = set(applicable_layers(res.mode))  # type: ignore[arg-type]
+    blockers = [s for s in res.unsatisfied_criteria() if s.criterion.layer in applicable]
     blockers.sort(key=lambda s: (s.criterion.stage, s.criterion.id))
     for status in blockers:
         unsatisfied.append(
