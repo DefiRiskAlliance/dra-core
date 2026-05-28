@@ -289,7 +289,7 @@
         <nav class="right-sidebar">
             <a href="index.html" class="nav-link">Charter</a>
             <a href="ratings.html" class="nav-link">Ratings</a>
-            <a href="https://github.com/Octave-byte/defiriskalliance-new" target="_blank" rel="noopener noreferrer" class="nav-link">GitHub</a>
+            <a href="https://github.com/DefiRiskAlliance/dra-core" target="_blank" rel="noopener noreferrer" class="nav-link">GitHub</a>
         </nav>
 
         <main class="main-content">
@@ -367,7 +367,7 @@
                     </div>
                 </div>
 
-                <p>Every cell of the matrix carries a list of named, monotonic <strong>criteria</strong> &mdash; concrete, falsifiable yes/no questions. Stage 1 has its own criteria; Stage 2 adds further criteria on top. The full registry lives in <a href="https://github.com/Octave-byte/defiriskalliance-new/blob/main/methodology/criteria.py">methodology/criteria.py</a>.</p>
+                <p>Every cell of the matrix carries a list of named, monotonic <strong>criteria</strong> &mdash; concrete, falsifiable yes/no questions. Stage 1 has its own criteria; Stage 2 adds further criteria on top. The full registry lives in <a href="https://github.com/DefiRiskAlliance/dra-core/blob/main/methodology/criteria.py">methodology/criteria.py</a>.</p>
 
                 <div class="matrix-wrap">
                     <table class="matrix">
@@ -421,7 +421,7 @@
                     <div><span class="label">strategy_stage</span> = min(layer_stage) over the layers applicable to the mode</div>
                 </div>
 
-                <p>This is the <strong>ratchet</strong>: a single failing cell pulls the whole strategy down to the worst stage. There is no averaging, no rounding, no compensating a 2 with a 0. The roll-up logic is implemented in <a href="https://github.com/Octave-byte/defiriskalliance-new/blob/main/methodology/compose.py">methodology/compose.py</a>.</p>
+                <p>This is the <strong>ratchet</strong>: a single failing cell pulls the whole strategy down to the worst stage. There is no averaging, no rounding, no compensating a 2 with a 0. The roll-up logic is implemented in <a href="https://github.com/DefiRiskAlliance/dra-core/blob/main/methodology/compose.py">methodology/compose.py</a>.</p>
 
                 <p><strong>Example.</strong> A strategy with the matrix below:</p>
 
@@ -448,7 +448,7 @@
                 <h2>Default to Worse</h2>
                 <p>No single rater defines the truth. Multiple independent providers submit <strong>attestations</strong> against the named criteria. Each attestation is one of <code>verified</code>, <code>violated</code>, or <code>unknown</code>, and carries the source plus a short evidence string.</p>
 
-                <p>Attestations are merged with one rule, taken straight from <a href="https://github.com/Octave-byte/defiriskalliance-new/blob/main/methodology/merge.py">methodology/merge.py</a>:</p>
+                <p>Attestations are merged with one rule, taken straight from <a href="https://github.com/DefiRiskAlliance/dra-core/blob/main/methodology/merge.py">methodology/merge.py</a>:</p>
 
                 <div class="ratchet-example">
                     satisfied = bool(verifications) <span class="label">and not</span> violations
@@ -486,22 +486,22 @@
                         <tr>
                             <td>Pharos</td>
                             <td>Asset layer for stablecoins &mdash; bluechip ratings, peg stability, deep liquidity from <code>totalTvlUsd</code>.</td>
-                            <td><a href="https://github.com/Octave-byte/defiriskalliance-new/blob/main/providers/pharos.py">providers/pharos.py</a></td>
+                            <td><a href="https://github.com/DefiRiskAlliance/dra-core/blob/main/providers/pharos.py">providers/pharos.py</a></td>
                         </tr>
                         <tr>
                             <td>Yearn Risk Curation</td>
                             <td>Market and Vault layers &mdash; security / operations / economics derived from Yearn's published curation reports (1&ndash;5 scale bucketed into S1/S2 thresholds).</td>
-                            <td><a href="https://github.com/Octave-byte/defiriskalliance-new/blob/main/providers/yearn.py">providers/yearn.py</a></td>
+                            <td><a href="https://github.com/DefiRiskAlliance/dra-core/blob/main/providers/yearn.py">providers/yearn.py</a></td>
                         </tr>
                         <tr>
                             <td>Philidor</td>
                             <td>Vault layer (and Market when <code>philidor_fill_market_from_vault</code> is set) &mdash; audits, timelocks, curator accountability.</td>
-                            <td><a href="https://github.com/Octave-byte/defiriskalliance-new/blob/main/providers/philidor.py">providers/philidor.py</a></td>
+                            <td><a href="https://github.com/DefiRiskAlliance/dra-core/blob/main/providers/philidor.py">providers/philidor.py</a></td>
                         </tr>
                         <tr>
                             <td>Vaultscan</td>
                             <td>All three layers &mdash; numeric scores from the Vaultscan Supabase index, thresholded against the published S1/S2 cut-offs.</td>
-                            <td><a href="https://github.com/Octave-byte/defiriskalliance-new/blob/main/providers/vaultscan.py">providers/vaultscan.py</a></td>
+                            <td><a href="https://github.com/DefiRiskAlliance/dra-core/blob/main/providers/vaultscan.py">providers/vaultscan.py</a></td>
                         </tr>
                     </tbody>
                 </table>
@@ -544,7 +544,7 @@
 
             <div class="section" style="text-align: center; padding-top: 16px;">
                 <p class="section-label">Full specification</p>
-                <p>The full criterion registry, mode definitions, and adapter contracts live in the open repository. Start at <a href="https://github.com/Octave-byte/defiriskalliance-new/blob/main/methodology/criteria.py">methodology/criteria.py</a> for the named criteria, and <a href="https://github.com/Octave-byte/defiriskalliance-new/blob/main/methodology/engine.py">methodology/engine.py</a> for the engine that wires raters to the matrix.</p>
+                <p>The full criterion registry, mode definitions, and adapter contracts live in the open repository. Start at <a href="https://github.com/DefiRiskAlliance/dra-core/blob/main/methodology/criteria.py">methodology/criteria.py</a> for the named criteria, and <a href="https://github.com/DefiRiskAlliance/dra-core/blob/main/methodology/engine.py">methodology/engine.py</a> for the engine that wires raters to the matrix.</p>
             </div>
         </main>
     </div>

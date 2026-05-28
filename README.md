@@ -3,7 +3,7 @@
 A Python library that aggregates external risk providers into a single DeFi
 **strategy stage** (`0`, `1`, or `2`) using the **DeFi Risk Alliance** v3.0
 methodology. The published spec lives at
-[`defiriskalliance/docs/METHODOLOGY.md`](https://github.com/Octave-byte/defiriskalliance-new/blob/main/docs/METHODOLOGY.md);
+[`defiriskalliance/docs/METHODOLOGY.md`](https://github.com/DefiRiskAlliance/dra-core/blob/main/docs/METHODOLOGY.md);
 this repository is the reference implementation.
 
 ## What changed vs v2.2
