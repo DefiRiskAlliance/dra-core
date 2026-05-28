@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-28T09:34:44+00:00",
+  "generated_at": "2026-05-28T10:52:23+00:00",
   "methodology_version": "v3.0",
   "raters": [
     "pharos",
@@ -12,6 +12,7 @@
     {
       "id": "morpho-steakhouse-usdc",
       "label": "Morpho \u00b7 Steakhouse USDC",
+      "yield_blurb": "USDC deposits routed by the Steakhouse Financial curator across isolated Morpho Blue markets (typically wstETH/USDC, sDAI/USDC, cbBTC/USDC). Yield is the interest paid by overcollateralized borrowers in those markets, weighted by the curator's allocations and net of the vault's performance fee.",
       "mode": "A",
       "applicable_layers": [
         "asset",
@@ -69,6 +70,7 @@
     {
       "id": "morpho-gauntlet-usdc-core",
       "label": "Morpho \u00b7 Gauntlet USDC Core",
+      "yield_blurb": "Same Morpho Blue mechanism with Gauntlet's curator allocations across a conservative blue-chip collateral set. Yield is the blended interest paid by borrowers in the chosen markets, minus Gauntlet's performance fee.",
       "mode": "A",
       "applicable_layers": [
         "asset",
@@ -126,6 +128,7 @@
     {
       "id": "morpho-steakhouse-pyusd",
       "label": "Morpho \u00b7 Steakhouse PYUSD",
+      "yield_blurb": "PYUSD deposits curated by Steakhouse Financial into PYUSD-denominated Morpho Blue markets backed by ETH and liquid-staking-token collateral. Yield is the borrower interest in those isolated PYUSD markets, net of the curator's fee.",
       "mode": "A",
       "applicable_layers": [
         "asset",
@@ -164,6 +167,7 @@
     {
       "id": "aave-v3-usdc",
       "label": "Aave v3 \u00b7 USDC (Ethereum)",
+      "yield_blurb": "Direct supply into the Aave v3 USDC reserve on Ethereum mainnet. Yield is the variable supply APY paid by USDC borrowers (with a portion retained as reserve factor by the protocol). The rate scales with utilisation along Aave's kinked interest-rate curve and is set by Aave governance.",
       "mode": "C",
       "applicable_layers": [
         "asset",
@@ -257,6 +261,7 @@
     {
       "id": "aave-v3-usdt",
       "label": "Aave v3 \u00b7 USDT (Ethereum)",
+      "yield_blurb": "Direct supply into the Aave v3 USDT reserve on Ethereum mainnet. Yield is the variable supply APY paid by USDT borrowers, set by the Aave-governed interest-rate curve and current pool utilisation, minus the reserve factor.",
       "mode": "C",
       "applicable_layers": [
         "asset",
@@ -360,6 +365,7 @@
     {
       "id": "yearn-v3-yvusdc",
       "label": "Yearn v3 \u00b7 yvUSDC",
+      "yield_blurb": "ERC-4626 vault that auto-allocates USDC across Yearn v3 strategies (Aave, Compound, Curve-Convex stable LPs, etc.) following the targets set in the Yearn risk-curation report. Net APY is the blended yield from those underlying strategies minus Yearn's management and performance fees.",
       "mode": "A",
       "applicable_layers": [
         "asset",
@@ -494,6 +500,7 @@
     {
       "id": "yearn-v3-yvusd",
       "label": "Yearn v3 \u00b7 yvUSD",
+      "yield_blurb": "Cross-chain meta-vault that holds multiple underlying USDC yvVaults across supported chains. Yield is the weighted average of those underlyings' net APYs, rebalanced according to Yearn's risk-curation scoring and net of the meta-vault's own fee.",
       "mode": "A",
       "applicable_layers": [
         "asset",

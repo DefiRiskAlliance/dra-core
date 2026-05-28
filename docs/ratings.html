@@ -282,6 +282,50 @@
             text-align: right;
         }
 
+        .yield-blurb {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--text-secondary);
+            padding: 14px 18px;
+            border-radius: 4px;
+            font-size: 0.92rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }
+        .yield-blurb .label {
+            display: block;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            font-family: 'Space Mono', ui-monospace, monospace;
+        }
+        .challenge-row {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .challenge-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.82rem;
+            font-family: 'Space Mono', ui-monospace, monospace;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 6px 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            transition: color 0.15s, border-color 0.15s;
+        }
+        .challenge-link:hover {
+            color: var(--text-primary);
+            border-color: var(--text-primary);
+        }
+
         .entry-head .strategy-stage .label {
             font-size: 11px;
             font-weight: 600;
@@ -973,6 +1017,21 @@
             `;
         }
 
+        function renderYieldBlurb(entry) {
+            if (!entry.yield_blurb) return '';
+            return `<div class="yield-blurb"><span class="label">How yield is generated</span>${entry.yield_blurb}</div>`;
+        }
+
+        function renderChallengeLink(entry) {
+            const params = new URLSearchParams({
+                template: 'challenge-rating.yml',
+                title: `[Challenge] ${entry.id} — <criterion id>`,
+                'entry_id': entry.id,
+            });
+            const url = `https://github.com/DefiRiskAlliance/defiriskalliance.github.io/issues/new?${params.toString()}`;
+            return `<div class="challenge-row"><a class="challenge-link" href="${url}" target="_blank" rel="noopener">Challenge this rating &rarr;</a></div>`;
+        }
+
         function renderEntries(data) {
             const root = document.getElementById('entries');
             const cards = data.entries.map(e => `
@@ -988,11 +1047,15 @@
                         </div>
                     </header>
 
+                    ${renderYieldBlurb(e)}
+
                     ${renderSources(e)}
 
                     ${renderCamemberts(e)}
 
                     ${renderBlockers(e)}
+
+                    ${renderChallengeLink(e)}
                 </article>
             `).join('');
             root.innerHTML = cards;

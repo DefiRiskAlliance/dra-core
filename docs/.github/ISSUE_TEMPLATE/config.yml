@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Read the methodology first
+    url: https://defiriskalliance.github.io/methodology.html
+    about: Understand how stages are computed before filing a challenge.

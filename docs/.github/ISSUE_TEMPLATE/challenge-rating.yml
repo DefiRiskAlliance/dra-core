@@ -1,0 +1,94 @@
+name: Challenge a rating
+description: Contest a specific criterion verdict on a DRA-rated entry with evidence.
+title: "[Challenge] <entry id> — <criterion id>"
+labels: ["challenge", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for keeping us honest. Use this form to contest a single
+        criterion verdict on a single entry. If you want to challenge
+        several criteria, open one issue per criterion so the audit trail
+        stays clean.
+
+        Anyone can file a challenge. The DRA team reviews on a best-effort
+        basis. Upheld challenges become a `ManualOverride` PR that cites
+        this issue number as `rationale_ref` — your input becomes part of
+        the public audit log.
+
+  - type: input
+    id: entry_id
+    attributes:
+      label: Entry id
+      description: The `id` field from ratings.json (e.g. `aave-v3-usdc`, `morpho-steakhouse-pyusd`).
+      placeholder: aave-v3-usdc
+    validations:
+      required: true
+
+  - type: input
+    id: criterion_id
+    attributes:
+      label: Criterion id
+      description: Full id from methodology/criteria.py (e.g. `market.security.s1.audited`).
+      placeholder: market.security.s1.audited
+    validations:
+      required: true
+
+  - type: dropdown
+    id: challenged_verdict
+    attributes:
+      label: Current verdict on the site
+      description: What does the published rating say today for this criterion?
+      options:
+        - verified
+        - violated
+        - unknown / unattested
+    validations:
+      required: true
+
+  - type: dropdown
+    id: claimed_verdict
+    attributes:
+      label: Verdict you believe is correct
+      options:
+        - verified
+        - violated
+        - unknown / unattested
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Public URLs (audit reports, post-mortems, on-chain transactions, governance proposals, etc.) and a short summary of what they show.
+      placeholder: |
+        - https://github.com/aave/aave-v3-core/tree/master/audits — SigmaPrime, OpenZeppelin, ABDK, Trail of Bits reports.
+        - Etherscan tx 0x… — timelock executed at block N.
+    validations:
+      required: true
+
+  - type: textarea
+    id: rationale
+    attributes:
+      label: Why the current verdict is wrong
+      description: Explain how the evidence above contradicts the published verdict for this criterion.
+    validations:
+      required: true
+
+  - type: input
+    id: rater
+    attributes:
+      label: Rater being challenged (optional)
+      description: If a specific rater produced the contested attestation, name it (e.g. `pharos`, `philidor`, `aave_defaults`). Leave blank if challenging an absent attestation.
+      placeholder: pharos
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Acknowledgements
+      options:
+        - label: I have linked at least one public source of evidence.
+          required: true
+        - label: I understand my submission is public and will be referenced in the audit log if upheld.
+          required: true

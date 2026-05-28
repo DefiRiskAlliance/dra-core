@@ -98,7 +98,7 @@ A working group of risk assessors, auditors, researchers, aggregators, wallets, 
 
 ### A public challenge process
 
-Any protocol, researcher, or user can challenge a score using evidence. Disagreements happen in the open, not in DMs.
+Any protocol, researcher, or user can challenge a score using evidence. Disagreements happen in the open, not in DMs. See [Challenges & Appeals](methodology.html#challenges) for how to file one — or open a [Challenge a rating](https://github.com/DefiRiskAlliance/defiriskalliance.github.io/issues/new?template=challenge-rating.yml) issue directly.
 
 ### Shared ownership, shared responsibility
 

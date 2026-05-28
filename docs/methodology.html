@@ -511,6 +511,37 @@
 
             <hr class="divider">
 
+            <div class="section" id="challenges">
+                <p class="section-label">Public accountability</p>
+                <h2>Challenges &amp; Appeals</h2>
+                <p>Every published verdict is contestable. The DRA team does not own the truth &mdash; raters and reviewers do, and they answer to a public process.</p>
+
+                <h3 style="margin-top:24px;">How to challenge a rating</h3>
+                <ol style="margin: 12px 0 0 24px; line-height: 1.85;">
+                    <li>Find the entry on the <a href="ratings.html">Ratings</a> page and identify the specific <code>criterion_id</code> you disagree with (every blocker shows its id).</li>
+                    <li>Open a <a href="https://github.com/DefiRiskAlliance/defiriskalliance.github.io/issues/new?template=challenge-rating.yml">Challenge a rating</a> issue and fill in the form: entry id, criterion id, current verdict, your claimed verdict, public evidence URLs, and a short rationale.</li>
+                    <li>One challenge per criterion. Multi-criterion concerns become multiple issues so the audit trail stays unambiguous.</li>
+                </ol>
+
+                <h3 style="margin-top:24px;">How challenges are resolved</h3>
+                <ul style="margin: 12px 0 0 24px; line-height: 1.85;">
+                    <li><strong>Triage:</strong> the team reviews on a best-effort basis &mdash; this is a public-goods project, not a paid service desk. Severity and clarity of evidence determine prioritisation.</li>
+                    <li><strong>Upheld:</strong> a reviewer opens a PR adding a <code>ManualOverride</code> to the entry's <code>StrategyContext</code>, with the challenge issue number as <code>rationale_ref</code>. The engine appends every such override to a JSONL audit log on the next score run, so the change is traceable forever.</li>
+                    <li><strong>Rejected:</strong> the issue is closed with a rationale comment. The reasoning is part of the public record and the same evidence cannot be reraised without new material.</li>
+                    <li><strong>Inconclusive:</strong> if reviewers can't agree, the issue stays open and the verdict stands until new evidence arrives or a rater changes its attestation.</li>
+                </ul>
+
+                <h3 style="margin-top:24px;">What a strong challenge looks like</h3>
+                <ul style="margin: 12px 0 0 24px; line-height: 1.85;">
+                    <li>One <code>criterion_id</code>, one issue.</li>
+                    <li>At least one independently verifiable public source (audit report, post-mortem, on-chain transaction, governance proposal).</li>
+                    <li>A specific claim about which clause of the criterion description is or isn't met.</li>
+                    <li>No personal attacks on raters &mdash; the system is designed to make raters disagree productively.</li>
+                </ul>
+            </div>
+
+            <hr class="divider">
+
             <div class="section" style="text-align: center; padding-top: 16px;">
                 <p class="section-label">Full specification</p>
                 <p>The full criterion registry, mode definitions, and adapter contracts live in the open repository. Start at <a href="https://github.com/Octave-byte/defiriskalliance-new/blob/main/methodology/criteria.py">methodology/criteria.py</a> for the named criteria, and <a href="https://github.com/Octave-byte/defiriskalliance-new/blob/main/methodology/engine.py">methodology/engine.py</a> for the engine that wires raters to the matrix.</p>

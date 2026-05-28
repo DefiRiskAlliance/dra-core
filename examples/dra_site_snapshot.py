@@ -100,6 +100,12 @@ ENTRIES: list[dict[str, Any]] = [
     {
         "id": "morpho-steakhouse-usdc",
         "label": "Morpho · Steakhouse USDC",
+        "yield_blurb": (
+            "USDC deposits routed by the Steakhouse Financial curator across isolated "
+            "Morpho Blue markets (typically wstETH/USDC, sDAI/USDC, cbBTC/USDC). Yield is "
+            "the interest paid by overcollateralized borrowers in those markets, weighted "
+            "by the curator's allocations and net of the vault's performance fee."
+        ),
         "mode": "A",
         "asset_is_stablecoin": True,
         "pharos_stablecoin_id": "usdc-circle",
@@ -111,6 +117,11 @@ ENTRIES: list[dict[str, Any]] = [
     {
         "id": "morpho-gauntlet-usdc-core",
         "label": "Morpho · Gauntlet USDC Core",
+        "yield_blurb": (
+            "Same Morpho Blue mechanism with Gauntlet's curator allocations across a "
+            "conservative blue-chip collateral set. Yield is the blended interest paid by "
+            "borrowers in the chosen markets, minus Gauntlet's performance fee."
+        ),
         "mode": "A",
         "asset_is_stablecoin": True,
         "pharos_stablecoin_id": "usdc-circle",
@@ -122,6 +133,11 @@ ENTRIES: list[dict[str, Any]] = [
     {
         "id": "morpho-steakhouse-pyusd",
         "label": "Morpho · Steakhouse PYUSD",
+        "yield_blurb": (
+            "PYUSD deposits curated by Steakhouse Financial into PYUSD-denominated Morpho "
+            "Blue markets backed by ETH and liquid-staking-token collateral. Yield is the "
+            "borrower interest in those isolated PYUSD markets, net of the curator's fee."
+        ),
         "mode": "A",
         "asset_is_stablecoin": True,
         "pharos_stablecoin_id": "pyusd-paypal",
@@ -133,6 +149,12 @@ ENTRIES: list[dict[str, Any]] = [
     {
         "id": "aave-v3-usdc",
         "label": "Aave v3 · USDC (Ethereum)",
+        "yield_blurb": (
+            "Direct supply into the Aave v3 USDC reserve on Ethereum mainnet. Yield is the "
+            "variable supply APY paid by USDC borrowers (with a portion retained as reserve "
+            "factor by the protocol). The rate scales with utilisation along Aave's kinked "
+            "interest-rate curve and is set by Aave governance."
+        ),
         "mode": "C",
         "asset_is_stablecoin": True,
         "pharos_stablecoin_id": "usdc-circle",
@@ -141,6 +163,11 @@ ENTRIES: list[dict[str, Any]] = [
     {
         "id": "aave-v3-usdt",
         "label": "Aave v3 · USDT (Ethereum)",
+        "yield_blurb": (
+            "Direct supply into the Aave v3 USDT reserve on Ethereum mainnet. Yield is the "
+            "variable supply APY paid by USDT borrowers, set by the Aave-governed interest-rate "
+            "curve and current pool utilisation, minus the reserve factor."
+        ),
         "mode": "C",
         "asset_is_stablecoin": True,
         "pharos_stablecoin_id": "usdt-tether",
@@ -151,6 +178,12 @@ ENTRIES: list[dict[str, Any]] = [
         # github.com/yearn/risk-score/blob/master/reports/report/yearn-yvusdc.md
         "id": "yearn-v3-yvusdc",
         "label": "Yearn v3 · yvUSDC",
+        "yield_blurb": (
+            "ERC-4626 vault that auto-allocates USDC across Yearn v3 strategies (Aave, "
+            "Compound, Curve-Convex stable LPs, etc.) following the targets set in the "
+            "Yearn risk-curation report. Net APY is the blended yield from those underlying "
+            "strategies minus Yearn's management and performance fees."
+        ),
         "mode": "A",
         "asset_is_stablecoin": True,
         "pharos_stablecoin_id": "usdc-circle",
@@ -166,6 +199,12 @@ ENTRIES: list[dict[str, Any]] = [
         # Yearn v3 yvUSD (cross-chain USDC vault). yearn-yvusd.md report.
         "id": "yearn-v3-yvusd",
         "label": "Yearn v3 · yvUSD",
+        "yield_blurb": (
+            "Cross-chain meta-vault that holds multiple underlying USDC yvVaults across "
+            "supported chains. Yield is the weighted average of those underlyings' net "
+            "APYs, rebalanced according to Yearn's risk-curation scoring and net of the "
+            "meta-vault's own fee."
+        ),
         "mode": "A",
         "asset_is_stablecoin": True,
         "pharos_stablecoin_id": "usdc-circle",
@@ -180,8 +219,11 @@ ENTRIES: list[dict[str, Any]] = [
 ]
 
 
+_NON_CONTEXT_KEYS = {"label", "id", "yield_blurb"}
+
+
 def _ctx_from_entry(entry: dict[str, Any]) -> StrategyContext:
-    fields = {k: v for k, v in entry.items() if k not in {"label", "id"}}
+    fields = {k: v for k, v in entry.items() if k not in _NON_CONTEXT_KEYS}
     return StrategyContext(**fields)
 
 
@@ -220,6 +262,7 @@ def _serialise(label: str, entry: dict[str, Any], res: DRAResult) -> dict[str, A
     return {
         "id": entry["id"],
         "label": label,
+        "yield_blurb": entry.get("yield_blurb"),
         "mode": res.mode,
         "applicable_layers": list(applicable_layers(res.mode)),  # type: ignore[arg-type]
         "strategy_stage": int(res.strategy_stage),
