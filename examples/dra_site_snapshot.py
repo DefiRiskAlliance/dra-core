@@ -84,6 +84,7 @@ _load_dotenv(ROOT / ".env")
 from methodology import COMPONENTS, DRAEngine, DRAResult, LAYERS, StrategyContext
 from methodology.compose import applicable_layers
 from providers import (
+    AaveDefaultsRater,
     PharosRater,
     PhilidorRater,
     VaultscanRater,
@@ -235,6 +236,7 @@ def main() -> None:
             PharosRater(),
             PhilidorRater(),
             YearnCurationRater(),
+            AaveDefaultsRater(),
         ]
     )
 
@@ -253,7 +255,7 @@ def main() -> None:
     out = {
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "methodology_version": "v3.0",
-        "raters": ["pharos", "yearn_curation", "philidor", "vaultscan"],
+        "raters": ["pharos", "yearn_curation", "philidor", "vaultscan", "aave_defaults"],
         "entries": serialised,
     }
 
