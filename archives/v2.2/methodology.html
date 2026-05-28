@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeFi Risk Alliance | Methodology</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #000000;
+            --bg-secondary: #0a0a0a;
+            --bg-card: #111111;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --accent: #ffffff;
+            --border: #2a2a2a;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            line-height: 1.7;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background:
+                radial-gradient(ellipse at 20% 0%, rgba(30,30,30,0.4) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(20,20,20,0.3) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .page-wrapper { display: flex; min-height: 100vh; }
+
+        .main-content {
+            flex: 1;
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 80px 40px 120px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .right-sidebar {
+            position: fixed;
+            right: 40px;
+            top: 80px;
+            display: flex;
+            flex-direction: row;
+            gap: 32px;
+            z-index: 100;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .nav-link:hover { color: var(--text-primary); }
+
+        .logo-container {
+            margin-bottom: 64px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards;
+            text-align: center;
+        }
+
+        .logo {
+            max-width: 400px;
+            width: 100%;
+            height: auto;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .page-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2.2rem, 4.5vw, 3rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease 0.1s forwards;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 56px;
+            max-width: 600px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease 0.2s forwards;
+        }
+
+        .section {
+            margin-bottom: 64px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease 0.3s forwards;
+        }
+
+        .section-label {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .section h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(1.6rem, 2.5vw, 2rem);
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: -0.01em;
+        }
+
+        .section p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .section p strong { color: var(--text-primary); font-weight: 500; }
+
+        .divider {
+            border: none;
+            height: 1px;
+            background: var(--border);
+            margin: 56px 0;
+        }
+
+        /* Three-column grid for layers and axes */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin: 28px 0;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px 20px;
+        }
+
+        .card-icon {
+            font-size: 28px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .card h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+        /* Score matrix */
+        .matrix-wrap { margin: 28px 0; overflow-x: auto; }
+
+        .matrix {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.92rem;
+        }
+
+        .matrix th, .matrix td {
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .matrix th {
+            background: var(--bg-card);
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .matrix td {
+            color: var(--text-secondary);
+        }
+
+        .matrix td.row-header {
+            text-align: left;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        /* Counterparty example table */
+        .cp-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.92rem;
+            margin: 24px 0;
+        }
+
+        .cp-table th, .cp-table td {
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            text-align: left;
+        }
+
+        .cp-table th {
+            background: var(--bg-card);
+            font-weight: 600;
+            font-size: 0.8rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        .cp-table td { color: var(--text-secondary); }
+        .cp-table td:first-child { color: var(--text-primary); font-weight: 500; }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 0.82rem;
+            font-weight: 500;
+        }
+        .tag-high { background: rgba(74,222,128,0.12); color: #4ade80; }
+        .tag-medium { background: rgba(250,204,21,0.12); color: #facc15; }
+        .tag-low { background: rgba(248,113,113,0.12); color: #f87171; }
+        .tag-major { background: rgba(255,255,255,0.08); color: var(--text-primary); }
+        .tag-minor { background: rgba(255,255,255,0.04); color: var(--text-secondary); }
+
+        /* Tier definition mini-grid */
+        .tier-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 28px 0;
+        }
+
+        .tier-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .tier-card h4 {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .tier-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.88rem;
+        }
+
+        .tier-row:last-child { border-bottom: none; }
+
+        .tier-row .label { font-weight: 500; }
+        .tier-row .desc { color: var(--text-secondary); text-align: right; max-width: 65%; }
+
+        .note {
+            background: var(--bg-card);
+            border-left: 3px solid var(--text-secondary);
+            padding: 16px 20px;
+            margin: 24px 0;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .note strong { color: var(--text-primary); }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 1100px) {
+            .right-sidebar { right: 20px; gap: 24px; }
+        }
+
+        @media (max-width: 900px) {
+            .right-sidebar {
+                position: fixed;
+                top: auto; bottom: 0; right: 0; left: 0;
+                flex-direction: row;
+                justify-content: center;
+                gap: 32px;
+                padding: 20px;
+                background: linear-gradient(to top, var(--bg-primary) 80%, transparent);
+            }
+            .main-content { padding: 60px 24px 100px; }
+            .logo { max-width: 300px; }
+        }
+
+        @media (max-width: 680px) {
+            .card-grid { grid-template-columns: 1fr; }
+            .tier-grid { grid-template-columns: 1fr; }
+        }
+
+        ::selection { background: var(--text-primary); color: var(--bg-primary); }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <nav class="right-sidebar">
+            <a href="index.html" class="nav-link">Charter</a>
+            <a href="https://github.com/Octave-byte/defiriskalliance" target="_blank" rel="noopener noreferrer" class="nav-link">GitHub</a>
+        </nav>
+
+        <main class="main-content">
+            <div class="logo-container">
+                <a href="index.html"><img src="assets/logo.png" alt="DeFi Risk Alliance" class="logo"></a>
+            </div>
+
+            <h1 class="page-title">How We Score Risk</h1>
+            <p class="page-subtitle">An open, composable methodology for evaluating the risk of DeFi yield strategies. Every assumption is public, every score is auditable.</p>
+
+            <!-- Section: Three Layers -->
+            <div class="section">
+                <p class="section-label">Step 1</p>
+                <h2>Decompose the Strategy</h2>
+                <p>Every strategy is broken down into up to three <strong>layers</strong>, each representing a different level of the stack you are exposed to.</p>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <span class="card-icon">&#9672;</span>
+                        <h3>Asset</h3>
+                        <p>The underlying token itself. Is USDC safe? How stable is stETH? What backs wBTC?</p>
+                    </div>
+                    <div class="card">
+                        <span class="card-icon">&#9678;</span>
+                        <h3>Market</h3>
+                        <p>The lending or borrowing venue where the asset is deployed &mdash; Aave, Compound, Fluid, etc.</p>
+                    </div>
+                    <div class="card">
+                        <span class="card-icon">&#9670;</span>
+                        <h3>Vault</h3>
+                        <p>The strategy vault or CDP that allocates capital across markets &mdash; Morpho, Yearn, Maker, etc.</p>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <!-- Section: Three Axes -->
+            <div class="section">
+                <p class="section-label">Step 2</p>
+                <h2>Evaluate on Three Axes</h2>
+                <p>Each layer is independently scored on three dimensions. Together they form a <strong>3 &times; 3 matrix</strong> of scores.</p>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <span class="card-icon">&#128274;</span>
+                        <h3>Security</h3>
+                        <p>Smart contract maturity, audit coverage, bug bounty programs, and track record (Lindy effect).</p>
+                    </div>
+                    <div class="card">
+                        <span class="card-icon">&#9881;</span>
+                        <h3>Operations</h3>
+                        <p>Governance structure, timelocks, oracle quality, documentation transparency, and regulatory posture.</p>
+                    </div>
+                    <div class="card">
+                        <span class="card-icon">&#9878;</span>
+                        <h3>Economics</h3>
+                        <p>Peg stability, collateral quality, liquidity depth, strategy complexity, and liquidation risk.</p>
+                    </div>
+                </div>
+
+                <div class="matrix-wrap">
+                    <table class="matrix">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Security</th>
+                                <th>Operations</th>
+                                <th>Economics</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="row-header">Asset</td>
+                                <td>0 &ndash; 10</td>
+                                <td>0 &ndash; 10</td>
+                                <td>0 &ndash; 10</td>
+                            </tr>
+                            <tr>
+                                <td class="row-header">Market</td>
+                                <td>0 &ndash; 10</td>
+                                <td>0 &ndash; 10</td>
+                                <td>0 &ndash; 10</td>
+                            </tr>
+                            <tr>
+                                <td class="row-header">Vault</td>
+                                <td>0 &ndash; 10</td>
+                                <td>0 &ndash; 10</td>
+                                <td>0 &ndash; 10</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p>Each cell is scored <strong>0&ndash;10</strong> by independent risk providers. Higher means safer. Missing data defaults to <strong>0</strong> &mdash; opacity is a risk factor.</p>
+            </div>
+
+            <hr class="divider">
+
+            <!-- Section: The Score -->
+            <div class="section">
+                <p class="section-label">Step 3</p>
+                <h2>Compute the Score</h2>
+                <p>Layer scores are weighted averages of their three axes. The weights reflect what matters most at each level:</p>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <h3>Asset &amp; Market</h3>
+                        <p>Security 30% &middot; Operations 30% &middot; Economics 40%</p>
+                    </div>
+                    <div class="card">
+                        <h3>Vault</h3>
+                        <p>Security 40% &middot; Operations 40% &middot; Economics 20%</p>
+                    </div>
+                    <div class="card">
+                        <h3>Strategy</h3>
+                        <p>Weighted combination of applicable layers, depending on strategy type.</p>
+                    </div>
+                </div>
+
+                <p>The final output is a single <strong>0&ndash;10 score</strong> for the entire strategy, always accompanied by the full axis breakdown so you can see exactly where risk concentrates.</p>
+            </div>
+
+            <hr class="divider">
+
+            <!-- Section: Counterparty Map -->
+            <div class="section">
+                <p class="section-label">Context Layer</p>
+                <h2>Counterparty Exposure Map</h2>
+                <p>A numeric score tells you <em>how much</em> risk. The Counterparty Exposure Map tells you <em>where</em> it comes from. Every scored strategy is accompanied by a map of all protocols and entities it depends on.</p>
+
+                <p>For each counterparty we record:</p>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <h3>Exposure</h3>
+                        <p><strong>Major</strong> &mdash; value flows directly through this protocol. <strong>Minor</strong> &mdash; auxiliary dependency like an oracle or bridge.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Lindy Score</h3>
+                        <p>How battle-tested is this protocol? Based on TVL secured multiplied by time without a critical exploit.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Operations Level</h3>
+                        <p>Governance maturity sourced from DeFiScan or equivalent frameworks. How decentralized and transparent is the protocol?</p>
+                    </div>
+                </div>
+
+                <p><strong>Example:</strong> a Morpho USDC vault deployed on Aave</p>
+
+                <table class="cp-table">
+                    <thead>
+                        <tr>
+                            <th>Counterparty</th>
+                            <th>Layer</th>
+                            <th>Exposure</th>
+                            <th>Lindy</th>
+                            <th>Operations</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Circle (USDC)</td>
+                            <td>Asset</td>
+                            <td><span class="tag tag-major">Major</span></td>
+                            <td><span class="tag tag-high">High</span></td>
+                            <td><span class="tag tag-medium">Medium</span></td>
+                        </tr>
+                        <tr>
+                            <td>Aave v3</td>
+                            <td>Market</td>
+                            <td><span class="tag tag-major">Major</span></td>
+                            <td><span class="tag tag-high">High</span></td>
+                            <td><span class="tag tag-high">High</span></td>
+                        </tr>
+                        <tr>
+                            <td>Morpho</td>
+                            <td>Vault</td>
+                            <td><span class="tag tag-major">Major</span></td>
+                            <td><span class="tag tag-medium">Medium</span></td>
+                            <td><span class="tag tag-medium">Medium</span></td>
+                        </tr>
+                        <tr>
+                            <td>Chainlink</td>
+                            <td>Market</td>
+                            <td><span class="tag tag-minor">Minor</span></td>
+                            <td><span class="tag tag-high">High</span></td>
+                            <td><span class="tag tag-high">High</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="tier-grid">
+                    <div class="tier-card">
+                        <h4>Lindy Tiers</h4>
+                        <div class="tier-row">
+                            <span class="label"><span class="tag tag-high">High</span></span>
+                            <span class="desc">&gt; $1B TVL, 3+ years, no exploit</span>
+                        </div>
+                        <div class="tier-row">
+                            <span class="label"><span class="tag tag-medium">Medium</span></span>
+                            <span class="desc">&gt; $100M TVL, 1+ year, no exploit</span>
+                        </div>
+                        <div class="tier-row">
+                            <span class="label"><span class="tag tag-low">Low</span></span>
+                            <span class="desc">&lt; $100M or &lt; 1 year or exploited</span>
+                        </div>
+                    </div>
+                    <div class="tier-card">
+                        <h4>Operations Tiers</h4>
+                        <div class="tier-row">
+                            <span class="label"><span class="tag tag-high">High</span></span>
+                            <span class="desc">DeFiScan Stage 2+, fully decentralized</span>
+                        </div>
+                        <div class="tier-row">
+                            <span class="label"><span class="tag tag-medium">Medium</span></span>
+                            <span class="desc">DeFiScan Stage 1, partial decentralization</span>
+                        </div>
+                        <div class="tier-row">
+                            <span class="label"><span class="tag tag-low">Low</span></span>
+                            <span class="desc">DeFiScan Stage 0, centralized control</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="note">
+                    <strong>The map is not a scoring input.</strong> It is a transparency layer. A 7/10 strategy backed by all-High-Lindy counterparties tells a very different story than a 7/10 with Low-Lindy dependencies. The map gives you the context the number alone cannot.
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <!-- Section: Multi-Rater -->
+            <div class="section">
+                <p class="section-label">Trust Model</p>
+                <h2>Multiple Independent Raters</h2>
+                <p>No single company defines risk. Multiple independent risk providers submit scores for each cell. The Alliance aggregates them into a single score using a transparent weighted average.</p>
+                <p>A rater can cover as little as <strong>one axis for one layer</strong> &mdash; there is no requirement to cover everything. Each submission participates independently. Rater weights are documented and versioned so that every score can be traced back to its sources.</p>
+                <p>If no rater covers a cell, the <strong>default-to-worse</strong> rule applies: the score is 0. Opacity is always penalized.</p>
+            </div>
+
+            <hr class="divider">
+
+            <div class="section" style="text-align: center; padding-top: 16px;">
+                <p class="section-label">Full specification</p>
+                <p>For the complete technical methodology, axis definitions, composition modes, and aggregation rules, see the <a href="https://github.com/Octave-byte/defiriskalliance/blob/main/docs/METHODOLOGY.md" target="_blank" rel="noopener noreferrer" style="color: var(--text-primary); text-decoration: underline;">full methodology document</a> on GitHub.</p>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

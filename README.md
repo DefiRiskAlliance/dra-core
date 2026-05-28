@@ -2,9 +2,11 @@
 
 A Python library that aggregates external risk providers into a single DeFi
 **strategy stage** (`0`, `1`, or `2`) using the **DeFi Risk Alliance** v3.0
-methodology. The published spec lives at
-[`defiriskalliance/docs/METHODOLOGY.md`](https://github.com/DefiRiskAlliance/dra-core/blob/main/docs/METHODOLOGY.md);
-this repository is the reference implementation.
+methodology. The rendered spec lives at
+[defiriskalliance.github.io/methodology](https://defiriskalliance.github.io/methodology.html);
+this repository is the reference implementation. The canonical registry is
+[`methodology/criteria.py`](./methodology/criteria.py) and the engine is
+[`methodology/engine.py`](./methodology/engine.py).
 
 ## What changed vs v2.2
 
@@ -18,6 +20,10 @@ rolled up by the *weakest-link* rule.
 | Layer rollup | Weighted average of axes | `min` over the three components |
 | Strategy rollup | Weighted average of layers | `min` over the layers applicable to the mode |
 | Provider output | `CellContribution(score=…)` | `CriterionAttestation(verdict=…)` |
+
+The full v2.2 specification and its operational scripts are preserved under
+[`archives/v2.2/`](./archives/v2.2/) for historical reference and
+score-reproducibility.
 
 ## Layers, components, stages
 
