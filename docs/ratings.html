@@ -658,6 +658,73 @@
         }
 
         .legend .item { display: flex; align-items: center; gap: 8px; }
+
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin: 16px 0 24px;
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Space Mono', ui-monospace, monospace;
+            font-size: 0.82rem;
+            flex-wrap: wrap;
+        }
+        .pagination .info { color: var(--text-secondary); }
+        .pagination .controls { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+        .pagination button {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 4px 11px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.82rem;
+            min-width: 32px;
+            transition: background 0.15s ease, border-color 0.15s ease;
+        }
+        .pagination button:hover:not(:disabled) {
+            background: rgba(255,255,255,0.04);
+            border-color: var(--text-primary);
+        }
+        .pagination button:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+        .pagination button.active {
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            border-color: var(--text-primary);
+            font-weight: 700;
+        }
+        .pagination .ellipsis {
+            padding: 0 6px;
+            color: var(--text-secondary);
+        }
+        .pagination .size {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            color: var(--text-secondary);
+            margin-left: 4px;
+        }
+        .pagination select {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.82rem;
+            cursor: pointer;
+        }
+        @media (max-width: 600px) {
+            .pagination { flex-direction: column; align-items: stretch; }
+        }
     </style>
 </head>
 <body>
@@ -674,14 +741,14 @@
             </div>
 
             <h1 class="page-title">Ratings</h1>
-            <p class="page-subtitle">A first batch of DRA v3.0 ratings on Morpho, Aave v3 and Yearn v3 vaults &mdash; produced by aggregating attestations from Pharos, Yearn Risk Curation, Philidor, and Vaultscan. Every cell is a Stage 0 / 1 / 2; a single failing cell ratchets the strategy.</p>
+            <p class="page-subtitle">A first batch of DRA v3.0 ratings on Morpho, Aave v3, and Yearn v3 vaults. Built by aggregating attestations from Pharos, Yearn Risk Curation, Philidor, and Vaultscan. Every cell is a Stage 0 / 1 / 2; a single failing cell ratchets the strategy.</p>
             <p class="page-meta" id="page-meta"></p>
 
             <div class="legend">
                 <span class="item"><span class="stage-pill s2">2</span> Hardened</span>
                 <span class="item"><span class="stage-pill s1">1</span> Baseline</span>
                 <span class="item"><span class="stage-pill s0">0</span> Unproven</span>
-                <span class="item"><span class="stage-pill sna">&mdash;</span> N/A for mode</span>
+                <span class="item"><span class="stage-pill sna">n/a</span> N/A for mode</span>
             </div>
 
             <div class="summary-grid" id="summary-grid"></div>
@@ -698,6 +765,25 @@
                 </thead>
                 <tbody id="entry-list-body"></tbody>
             </table>
+
+            <div class="pagination" id="pagination" style="display:none;">
+                <div class="info">
+                    Showing <span id="pg-range">&mdash;</span> of <span id="pg-total">&mdash;</span>
+                </div>
+                <div class="controls">
+                    <button id="pg-prev" type="button">&lsaquo; Prev</button>
+                    <span id="pg-pages"></span>
+                    <button id="pg-next" type="button">Next &rsaquo;</button>
+                    <label class="size">per page
+                        <select id="pg-size">
+                            <option value="10" selected>10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
 
             <div id="entries"></div>
         </main>
@@ -721,7 +807,7 @@
 
         function stagePill(value) {
             if (value === null || value === undefined) {
-                return '<span class="stage-pill sna">&mdash;</span>';
+                return '<span class="stage-pill sna">n/a</span>';
             }
             return '<span class="stage-pill ' + stageClass(value) + '">' + value + '</span>';
         }
@@ -802,12 +888,17 @@
                     </svg>`;
         }
 
-        function renderEntryList(data) {
+        function sortedEntries(data) {
+            // Stable sort: strategy stage desc, then label asc. Used by both the
+            // entry-list table and the entry cards so pagination keeps them aligned.
+            return [...data.entries].sort((a, b) =>
+                (b.strategy_stage - a.strategy_stage) || a.label.localeCompare(b.label));
+        }
+
+        function renderEntryList(entries, baseIndex = 0) {
             const tbody = document.getElementById('entry-list-body');
-            // Sort by strategy stage descending, then by label.
-            const rows = [...data.entries]
-                .map((e, i) => ({ e, i }))
-                .sort((a, b) => (b.e.strategy_stage - a.e.strategy_stage) || a.e.label.localeCompare(b.e.label))
+            const rows = entries
+                .map((e, i) => ({ e, i: baseIndex + i }))
                 .map((wrap, idx) => {
                     const e = wrap.e;
                     const meta = protocolMeta(e.id, e.label);
@@ -819,7 +910,7 @@
                         : 'Stage ' + e.strategy_stage;
                     return `
                         <tr>
-                            <td class="rank">${String(idx + 1).padStart(2, '0')}</td>
+                            <td class="rank">${String(wrap.i + 1).padStart(2, '0')}</td>
                             <td>
                                 <a href="#${e.id}" class="name-block" style="text-decoration:none;color:inherit;">
                                     <span class="avatar" style="background:${meta.logo ? '#0a0a0a' : meta.color}">${meta.logo ? `<img src="${meta.logo}" alt="" loading="lazy">` : meta.letter}</span>
@@ -979,14 +1070,14 @@
         function renderBlockers(entry) {
             const items = (entry.unsatisfied || []).slice(0, 8).map(b => {
                 const violations = (b.violations || []).map(v =>
-                    '<div class="evidence"><span class="src">violated</span> by <span class="src">' + v.source + '</span> &mdash; ' + (v.evidence || '(no evidence)') + '</div>'
+                    '<div class="evidence"><span class="src">violated</span> by <span class="src">' + v.source + '</span>: ' + (v.evidence || '(no evidence)') + '</div>'
                 ).join('');
                 const verifications = (b.verifications || []).map(v =>
-                    '<div class="evidence"><span class="src">verified</span> by <span class="src">' + v.source + '</span> &mdash; ' + (v.evidence || '(no evidence)') + '</div>'
+                    '<div class="evidence"><span class="src">verified</span> by <span class="src">' + v.source + '</span>: ' + (v.evidence || '(no evidence)') + '</div>'
                 ).join('');
                 const evidenceHtml = (violations || verifications)
                     ? (violations + verifications)
-                    : '<div class="evidence">No attestations &mdash; default-to-worse.</div>';
+                    : '<div class="evidence">No attestations. Default-to-worse.</div>';
                 const cls = b.stage === 2 ? 's2-blocker' : '';
                 return `
                     <li class="${cls}">
@@ -997,7 +1088,7 @@
                 `;
             }).join('');
             if (!items) {
-                return '<div class="blockers-block"><h4>Blockers</h4><div class="empty-state">No unsatisfied criteria &mdash; this strategy reaches its applicable maximum stage.</div></div>';
+                return '<div class="blockers-block"><h4>Blockers</h4><div class="empty-state">No unsatisfied criteria. This strategy reaches its applicable maximum stage.</div></div>';
             }
             const total = (entry.unsatisfied || []).length;
             const more = total > 8
@@ -1025,16 +1116,16 @@
         function renderChallengeLink(entry) {
             const params = new URLSearchParams({
                 template: 'challenge-rating.yml',
-                title: `[Challenge] ${entry.id} — <criterion id>`,
+                title: `[Challenge] ${entry.id}: <criterion id>`,
                 'entry_id': entry.id,
             });
             const url = `https://github.com/DefiRiskAlliance/defiriskalliance.github.io/issues/new?${params.toString()}`;
             return `<div class="challenge-row"><a class="challenge-link" href="${url}" target="_blank" rel="noopener">Challenge this rating &rarr;</a></div>`;
         }
 
-        function renderEntries(data) {
+        function renderEntries(entries) {
             const root = document.getElementById('entries');
-            const cards = data.entries.map(e => `
+            const cards = entries.map(e => `
                 <article class="entry-card" id="${e.id}">
                     <header class="entry-head">
                         <div class="label-block">
@@ -1074,6 +1165,80 @@
             root.innerHTML = '<div class="error-state">Could not load <code>ratings.json</code>: ' + (err && err.message ? err.message : err) + '<br><br>If you opened this file directly via <code>file://</code>, run <code>python3 -m http.server</code> from the <code>docs/</code> folder and visit <code>http://localhost:8000/ratings.html</code>.</div>';
         }
 
+        // ----- pagination -------------------------------------------------
+        const PAGINATION = { page: 1, pageSize: 10, sorted: [] };
+
+        function renderPageButtons(totalPages) {
+            // Compact pager: 1 … (p-1) p (p+1) … last. Avoids growing forever.
+            const wrap = document.getElementById('pg-pages');
+            const cur = PAGINATION.page;
+            const out = [];
+            const push = (p) => out.push(
+                `<button type="button" class="${p === cur ? 'active' : ''}" data-page="${p}">${p}</button>`
+            );
+            const ellipsis = () => out.push('<span class="ellipsis">&hellip;</span>');
+            if (totalPages <= 7) {
+                for (let p = 1; p <= totalPages; p++) push(p);
+            } else {
+                push(1);
+                if (cur > 3) ellipsis();
+                const start = Math.max(2, cur - 1);
+                const end = Math.min(totalPages - 1, cur + 1);
+                for (let p = start; p <= end; p++) push(p);
+                if (cur < totalPages - 2) ellipsis();
+                push(totalPages);
+            }
+            wrap.innerHTML = out.join('');
+            wrap.querySelectorAll('button[data-page]').forEach(btn => {
+                btn.addEventListener('click', () => goToPage(Number(btn.dataset.page)));
+            });
+        }
+
+        function applyPagination() {
+            const total = PAGINATION.sorted.length;
+            const totalPages = Math.max(1, Math.ceil(total / PAGINATION.pageSize));
+            PAGINATION.page = Math.min(Math.max(1, PAGINATION.page), totalPages);
+            const startIdx = (PAGINATION.page - 1) * PAGINATION.pageSize;
+            const slice = PAGINATION.sorted.slice(startIdx, startIdx + PAGINATION.pageSize);
+
+            renderEntryList(slice, startIdx);
+            renderEntries(slice);
+            document.getElementById('entry-list').style.display = '';
+
+            const ctrl = document.getElementById('pagination');
+            if (total <= PAGINATION.pageSize) {
+                ctrl.style.display = 'none';
+                return;
+            }
+            ctrl.style.display = '';
+            document.getElementById('pg-range').textContent =
+                `${startIdx + 1}–${Math.min(startIdx + PAGINATION.pageSize, total)}`;
+            document.getElementById('pg-total').textContent = String(total);
+            document.getElementById('pg-prev').disabled = PAGINATION.page === 1;
+            document.getElementById('pg-next').disabled = PAGINATION.page === totalPages;
+            renderPageButtons(totalPages);
+        }
+
+        function goToPage(p) {
+            PAGINATION.page = p;
+            applyPagination();
+            // Scroll to the top of the entry list so the new page starts in view.
+            const anchor = document.getElementById('entry-list');
+            if (anchor) anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function bindPaginationControls() {
+            document.getElementById('pg-prev').addEventListener('click',
+                () => goToPage(PAGINATION.page - 1));
+            document.getElementById('pg-next').addEventListener('click',
+                () => goToPage(PAGINATION.page + 1));
+            document.getElementById('pg-size').addEventListener('change', (ev) => {
+                PAGINATION.pageSize = Number(ev.target.value) || 10;
+                PAGINATION.page = 1;
+                applyPagination();
+            });
+        }
+
         fetch('ratings.json')
             .then(r => {
                 if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -1082,8 +1247,9 @@
             .then(data => {
                 setMeta(data);
                 renderSummaryGrid(data);
-                renderEntryList(data);
-                renderEntries(data);
+                PAGINATION.sorted = sortedEntries(data);
+                bindPaginationControls();
+                applyPagination();
             })
             .catch(showError);
     </script>

@@ -85,8 +85,13 @@ from methodology import COMPONENTS, DRAEngine, DRAResult, LAYERS, StrategyContex
 from methodology.compose import applicable_layers
 from providers import (
     AaveDefaultsRater,
+    EulerDefaultsRater,
+    FluidDefaultsRater,
+    LidoDefaultsRater,
+    MellowDefaultsRater,
     PharosRater,
     PhilidorRater,
+    RocketPoolDefaultsRater,
     VaultscanRater,
     YearnCurationRater,
 )
@@ -216,6 +221,30 @@ ENTRIES: list[dict[str, Any]] = [
             "https://raw.githubusercontent.com/yearn/risk-score/master/reports/report/yearn-yvusd.md"
         ),
     },
+    # ---------------------------------------------------------------------
+    # TEMPLATE — uncomment to add a new entry. Required fields: id, label,
+    # mode. Match a default-rater prefix in ``vaultscan_id`` to pull in the
+    # protocol's baked-in security facts (lido-*, rocketpool-* | rp-*,
+    # euler-*, fluid-*, mellow-*). Set ``philidor_network`` + ``vault_address``
+    # to hit Philidor, ``pharos_stablecoin_id`` to hit Pharos, etc.
+    #
+    # {
+    #     "id": "lido-wsteth-eth",
+    #     "label": "Lido · wstETH",
+    #     "yield_blurb": "...",
+    #     "mode": "B",
+    #     "asset_is_stablecoin": False,
+    #     "vaultscan_id": "lido-wsteth-1-0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
+    # },
+    # {
+    #     "id": "rocketpool-reth-eth",
+    #     "label": "Rocket Pool · rETH",
+    #     "yield_blurb": "...",
+    #     "mode": "B",
+    #     "asset_is_stablecoin": False,
+    #     "vaultscan_id": "rocketpool-reth-1-0xae78736cd615f374d3085123a210448e74fc6393",
+    # },
+    # ---------------------------------------------------------------------
 ]
 
 
@@ -281,6 +310,13 @@ def main() -> None:
             PhilidorRater(),
             YearnCurationRater(),
             AaveDefaultsRater(),
+            # Protocol defaults — match on ctx.vaultscan_id prefix
+            # (lido-*, rocketpool-* | rp-*, euler-*, fluid-*, mellow-*).
+            LidoDefaultsRater(),
+            RocketPoolDefaultsRater(),
+            EulerDefaultsRater(),
+            FluidDefaultsRater(),
+            MellowDefaultsRater(),
         ]
     )
 
@@ -299,7 +335,12 @@ def main() -> None:
     out = {
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "methodology_version": "v3.0",
-        "raters": ["pharos", "yearn_curation", "philidor", "vaultscan", "aave_defaults"],
+        "raters": [
+            "pharos", "yearn_curation", "philidor", "vaultscan",
+            "aave_defaults",
+            "lido_defaults", "rocketpool_defaults", "euler_defaults",
+            "fluid_defaults", "mellow_defaults",
+        ],
         "entries": serialised,
     }
 
