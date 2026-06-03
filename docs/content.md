@@ -7,11 +7,11 @@ Crypto emerged from the failures of 2008. A response to opacity, unchecked lever
 
 Yet recent history shows how far we have drifted.
 
-From Celsius to Luna to the recent xUSD collapse, it has become clear that opaque structures, circular dependencies, and hidden leverage continue to reappear onchain, often faster and more complex than before.
+From Celsius to Luna to the recent xUSD collapse, opaque structures, circular dependencies, and hidden leverage keep reappearing onchain, often faster and more complex than before.
 
 These failures erode user trust and undermine the credibility of the entire ecosystem.
 
-**Restoring trust requires action, not narratives.**
+**Restoring trust requires concrete action.**
 
 ---
 
@@ -19,9 +19,9 @@ These failures erode user trust and undermine the credibility of the entire ecos
 
 On paper, DeFi is transparent. In practice:
 
-- Risk information is fragmented across docs, multisig configs, governance forums, off-chain agreements, Telegram chats and unreadable onchain data.
+- Risk information is fragmented across docs, multisig configs, governance forums, off-chain agreements, Telegram chats, and unreadable onchain data.
 - "Stablecoins" and "yield" describe wildly different mechanisms and risk profiles.
-- Ratings (when they exist) are slow, sporadic, and closed.
+- Ratings, when they exist, are slow, sporadic, and closed.
 - Protocols face no consistent incentive to disclose verifiable risk data.
 - Users, wallets, and institutions cannot answer the simplest question: **"What am I actually exposed to?"**
 
@@ -29,14 +29,14 @@ On paper, DeFi is transparent. In practice:
 
 ## Our Belief
 
-We believe the ecosystem urgently needs a shared, open, credibly neutral standard for evaluating risk across:
+The ecosystem needs a shared, open, credibly neutral standard for evaluating risk across:
 
 - Assets
 - Strategies / Vaults
 - Money markets
 - Yield-bearing instruments and wrappers
 
-This standard must not repeat the failures of legacy ratings agencies. We don't need black boxes, pay-to-upgrade, hidden assumptions, or slow reaction cycles.
+Legacy rating agencies fail when they hide formulas, charge for upgrades, or move too slowly. The standard we propose has to avoid those failure modes.
 
 **What we propose:**
 
@@ -44,18 +44,18 @@ This standard must not repeat the failures of legacy ratings agencies. We don't 
 
 ### Credible Neutrality
 
-Risk scoring cannot become a political tool or a competitive weapon. The standard must be a public good, free to use and free from private advantage.
+Risk scoring should never become a political tool or a competitive weapon. The standard must be a public good, free to use, with no private advantage built in.
 
 ### Open Methodology
 
-No opaque formulas, no proprietary scoring logic. Every assumption, question, and metric must be:
+Formulas are public. Every assumption, question, and metric should be:
 
 - inspectable
 - challengeable
 - forkable
 - public
 
-A transparent system earns trust by design, not by brand.
+Trust comes from how the system is built, in the open.
 
 ### Default to Transparency
 
@@ -63,19 +63,19 @@ Opacity itself is a risk factor. When key data is missing, unverifiable, or offc
 
 > The default score worsens.
 
-The burden of proof is on the issuer to provide the data, not on the user to find it.
+The burden of proof sits with the issuer.
 
 ### Dynamic & Continuous
 
-Markets change constantly. Risk assessments must evolve with them. Automatically, where possible, and rapidly where not.
+Markets move fast. Risk assessments need to keep up: automatically where possible, manually where needed.
 
 ### Many Independent Inputs, One Shared Standard
 
-A single company cannot credibly define risk. Multiple risk providers, auditors, and researchers must feed into the system under transparent rules. Users should see the aggregated view, not one company's opinion.
+A single company cannot credibly define risk on its own. Multiple risk providers, auditors, and researchers feed into the system under transparent rules. Users see the aggregated view.
 
 ### Distribution First
 
-A standard only matters when it is visible. Scores must be easy to integrate via simple free APIs into UIs, wallets, aggregators, explorers, DEXs, and apps. Wide distribution forces protocols to align with transparency.
+A standard only matters when it is visible. Scores must integrate easily through a simple free API into wallets, aggregators, explorers, DEXs, and apps. Wide distribution pushes protocols to align with transparency.
 
 ## What We Are Building
 
@@ -86,8 +86,8 @@ A working group of risk assessors, auditors, researchers, aggregators, wallets, 
 ### A shared open methodology
 
 - A composable taxonomy for risk across assets, strategies, vaults, and money markets
-- Clear mappings from qualitative assessments → quantitative outputs
-- Explicit penalties for opacity or unverifiable claims
+- Clear mappings from qualitative assessments to quantitative outputs
+- Explicit penalties for opacity and unverifiable claims
 
 ### A neutral, public risk data layer
 
@@ -98,17 +98,15 @@ A working group of risk assessors, auditors, researchers, aggregators, wallets, 
 
 ### A public challenge process
 
-Any protocol, researcher, or user can challenge a score using evidence. Disagreements happen in the open, not in DMs. See [Challenges & Appeals](methodology.html#challenges) for how to file one — or open a [Challenge a rating](https://github.com/DefiRiskAlliance/defiriskalliance.github.io/issues/new?template=challenge-rating.yml) issue directly.
+Any protocol, researcher, or user can challenge a score with evidence. Disagreements happen in the open. See [Challenges & Appeals](methodology.html#challenges) for how to file one, or open a [Challenge a rating](https://github.com/DefiRiskAlliance/defiriskalliance.github.io/issues/new?template=challenge-rating.yml) issue directly.
 
 ### Shared ownership, shared responsibility
 
-This is not a one-company-owned product. Contributors operate under a credo:
+The Alliance is built as a public good. Contributors operate under a credo:
 
 > Public-good first, our company second.
 
-- No one can buy a better score.
-- No one can hide behind private models.
-- No one owns the standard but everyone can contribute to it.
+Scores cannot be bought. Models stay open. Anyone can contribute to the standard.
 
 ## Join the Alliance
 
@@ -116,6 +114,6 @@ This is not a one-company-owned product. Contributors operate under a credo:
 - Join the Working Group
 - Contribute to the Open Repository
 
-Together, we can make DeFi risk legible and rebuild trust where it belongs:
+Together we can make DeFi risk legible and rebuild trust where it belongs:
 
 **in transparency, verifiability, and open collaboration.**

@@ -298,7 +298,7 @@
             </div>
 
             <h1 class="page-title">How We Score Risk</h1>
-            <p class="page-subtitle">DRA v3.0 is a discrete, criterion-based methodology. Strategies are graded on a 0/1/2 ladder &mdash; not a continuous score &mdash; with a single failing cell ratcheting the whole rating to the worst stage. Every assumption is public, every attestation is auditable.</p>
+            <p class="page-subtitle">DRA v3.0 is a discrete, criterion-based methodology. Strategies sit on a three-stage ladder (0, 1, 2). A single failing cell pulls the whole rating down to the worst stage. Every assumption is public; every attestation is auditable.</p>
 
             <div class="section">
                 <p class="section-label">Step 1</p>
@@ -314,16 +314,16 @@
                     <div class="card">
                         <span class="card-icon">&#9678;</span>
                         <h3>Market</h3>
-                        <p>The lending or borrowing venue where the asset is deployed &mdash; Aave, Compound, Fluid, etc.</p>
+                        <p>The lending or borrowing venue where the asset is deployed (Aave, Compound, Fluid, and so on).</p>
                     </div>
                     <div class="card">
                         <span class="card-icon">&#9670;</span>
                         <h3>Vault</h3>
-                        <p>The strategy vault or CDP that allocates capital across markets &mdash; Morpho, Yearn, Maker, etc.</p>
+                        <p>The strategy vault or CDP that allocates capital across markets (Morpho, Yearn, Maker, and so on).</p>
                     </div>
                 </div>
 
-                <p>Not every strategy uses all three. The applicable layers are selected by <strong>composition mode</strong>:</p>
+                <p>Some strategies use only one or two of these layers. The applicable layers depend on the <strong>composition mode</strong>:</p>
 
                 <table class="modes-table">
                     <thead>
@@ -337,7 +337,7 @@
                         <tr><td>A</td><td>asset &middot; market &middot; vault</td><td>Vault routing through a money market (Morpho on Aave)</td></tr>
                         <tr><td>B</td><td>asset &middot; vault</td><td>Native vault that holds the asset directly</td></tr>
                         <tr><td>C</td><td>asset &middot; market</td><td>Direct deposit into a money market (Aave reserve)</td></tr>
-                        <tr><td>D</td><td>asset &middot; meta-vault &middot; underlying vaults</td><td>Vault of vaults &mdash; the worst underlying vault still ratchets the rating</td></tr>
+                        <tr><td>D</td><td>asset &middot; meta-vault &middot; underlying vaults</td><td>Vault of vaults. The worst underlying vault still ratchets the rating.</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -367,7 +367,7 @@
                     </div>
                 </div>
 
-                <p>Every cell of the matrix carries a list of named, monotonic <strong>criteria</strong> &mdash; concrete, falsifiable yes/no questions. Stage 1 has its own criteria; Stage 2 adds further criteria on top. The full registry lives in <a href="https://github.com/DefiRiskAlliance/dra-core/blob/main/methodology/criteria.py">methodology/criteria.py</a>.</p>
+                <p>Every cell of the matrix carries a list of named, monotonic <strong>criteria</strong>. Each criterion is a concrete, falsifiable yes/no question. Stage 1 has its own criteria; Stage 2 adds further criteria on top. The full registry lives in <a href="https://github.com/DefiRiskAlliance/dra-core/blob/main/methodology/criteria.py">methodology/criteria.py</a>.</p>
 
                 <div class="matrix-wrap">
                     <table class="matrix">
@@ -393,13 +393,13 @@
             <div class="section">
                 <p class="section-label">Step 3</p>
                 <h2>Three Stages, Ratchet to the Worst</h2>
-                <p>There is no continuous 0&ndash;10 number. A cell sits at one of three discrete stages.</p>
+                <p>Cells take one of three discrete stages.</p>
 
                 <div class="stage-grid">
                     <div class="stage-card s0">
                         <div class="stage-num">0</div>
                         <h3>Unproven</h3>
-                        <p>At least one Stage 1 criterion is unsatisfied or unattested. The cell does not meet a baseline of safety.</p>
+                        <p>At least one Stage 1 criterion is unsatisfied or unattested. The cell sits below the safety baseline.</p>
                     </div>
                     <div class="stage-card s1">
                         <div class="stage-num">1</div>
@@ -409,11 +409,11 @@
                     <div class="stage-card s2">
                         <div class="stage-num">2</div>
                         <h3>Hardened</h3>
-                        <p>Every Stage 1 <em>and</em> Stage 2 criterion is satisfied. The cell is hardened &mdash; multi-audit, long-Lindy, conservative.</p>
+                        <p>Every Stage 1 <em>and</em> Stage 2 criterion is satisfied. The cell is hardened: multi-audit, long Lindy, conservative.</p>
                     </div>
                 </div>
 
-                <p>Cells, layers, and the strategy roll up by the same simple rule &mdash; <strong>min-of-children</strong>:</p>
+                <p>Cells, layers, and the strategy all roll up by the same rule: <strong>min-of-children</strong>.</p>
 
                 <div class="ratchet-example">
                     <div><span class="label">component_stage</span> = max N where every criterion at stages 1..N is <em>satisfied</em></div>
@@ -421,7 +421,7 @@
                     <div><span class="label">strategy_stage</span> = min(layer_stage) over the layers applicable to the mode</div>
                 </div>
 
-                <p>This is the <strong>ratchet</strong>: a single failing cell pulls the whole strategy down to the worst stage. There is no averaging, no rounding, no compensating a 2 with a 0. The roll-up logic is implemented in <a href="https://github.com/DefiRiskAlliance/dra-core/blob/main/methodology/compose.py">methodology/compose.py</a>.</p>
+                <p>This is the <strong>ratchet</strong>. A single failing cell drops the whole strategy to the worst stage; a strong 2 elsewhere cannot compensate. The roll-up logic is implemented in <a href="https://github.com/DefiRiskAlliance/dra-core/blob/main/methodology/compose.py">methodology/compose.py</a>.</p>
 
                 <p><strong>Example.</strong> A strategy with the matrix below:</p>
 
@@ -457,13 +457,13 @@
                 <p>In words:</p>
 
                 <ul style="list-style: none; padding-left: 0; margin: 16px 0;">
-                    <li style="margin-bottom: 12px; color: var(--text-secondary); padding-left: 24px; position: relative;"><span style="position:absolute;left:0;color:var(--text-primary);font-weight:bold;">&middot;</span>One <code>violated</code> beats <em>any</em> number of <code>verified</code> &mdash; opacity-resistant, but also pessimistic when raters disagree.</li>
-                    <li style="margin-bottom: 12px; color: var(--text-secondary); padding-left: 24px; position: relative;"><span style="position:absolute;left:0;color:var(--text-primary);font-weight:bold;">&middot;</span>No attestations at all &rarr; the criterion is unsatisfied. Missing data is a risk factor, not a neutral fact.</li>
-                    <li style="margin-bottom: 12px; color: var(--text-secondary); padding-left: 24px; position: relative;"><span style="position:absolute;left:0;color:var(--text-primary);font-weight:bold;">&middot;</span>Disagreements are not averaged away. They surface in the per-entry attestation list and are the entry-point for the public challenge process.</li>
+                    <li style="margin-bottom: 12px; color: var(--text-secondary); padding-left: 24px; position: relative;"><span style="position:absolute;left:0;color:var(--text-primary);font-weight:bold;">&middot;</span>One <code>violated</code> beats any number of <code>verified</code>. The rule is opacity-resistant and pessimistic when raters disagree.</li>
+                    <li style="margin-bottom: 12px; color: var(--text-secondary); padding-left: 24px; position: relative;"><span style="position:absolute;left:0;color:var(--text-primary);font-weight:bold;">&middot;</span>If no rater attests at all, the criterion is unsatisfied. Missing data is itself a risk factor.</li>
+                    <li style="margin-bottom: 12px; color: var(--text-secondary); padding-left: 24px; position: relative;"><span style="position:absolute;left:0;color:var(--text-primary);font-weight:bold;">&middot;</span>Disagreements stay visible. They appear in the per-entry attestation list and are where the public challenge process starts.</li>
                 </ul>
 
                 <div class="note">
-                    <strong>Why this rule?</strong> Averaging incentivises raters to file shallow <code>verified</code> attestations to dilute red flags. Default-to-worse forces the rating to surface at least one source of evidence that it is wrong, in the open.
+                    <strong>Why this rule?</strong> Averaging gives raters an incentive to file shallow <code>verified</code> attestations that dilute red flags. Default-to-worse pushes that pressure the other way: to lift a verdict, someone has to put public evidence on record.
                 </div>
             </div>
 
@@ -472,7 +472,7 @@
             <div class="section">
                 <p class="section-label">Independent Raters</p>
                 <h2>Who Files Attestations</h2>
-                <p>A rater can cover as little as <strong>one criterion in one cell</strong> &mdash; there is no requirement to be exhaustive. Each adapter declares its supported criteria, fetches its data, and emits attestations. The current production raters in this repo:</p>
+                <p>A rater can cover as little as <strong>one criterion in one cell</strong>. Exhaustiveness is not required. Each adapter declares its supported criteria, fetches its data, and emits attestations. The current production raters in this repo:</p>
 
                 <table class="raters-table">
                     <thead>
@@ -485,28 +485,28 @@
                     <tbody>
                         <tr>
                             <td>Pharos</td>
-                            <td>Asset layer for stablecoins &mdash; bluechip ratings, peg stability, deep liquidity from <code>totalTvlUsd</code>.</td>
+                            <td>Asset layer for stablecoins. Sources bluechip ratings, peg stability, and deep liquidity from <code>totalTvlUsd</code>.</td>
                             <td><a href="https://github.com/DefiRiskAlliance/dra-core/blob/main/providers/pharos.py">providers/pharos.py</a></td>
                         </tr>
                         <tr>
                             <td>Yearn Risk Curation</td>
-                            <td>Market and Vault layers &mdash; security / operations / economics derived from Yearn's published curation reports (1&ndash;5 scale bucketed into S1/S2 thresholds).</td>
+                            <td>Market and Vault layers. Security, operations, and economics are derived from Yearn's published curation reports (1&ndash;5 scale bucketed into S1/S2 thresholds).</td>
                             <td><a href="https://github.com/DefiRiskAlliance/dra-core/blob/main/providers/yearn.py">providers/yearn.py</a></td>
                         </tr>
                         <tr>
                             <td>Philidor</td>
-                            <td>Vault layer (and Market when <code>philidor_fill_market_from_vault</code> is set) &mdash; audits, timelocks, curator accountability.</td>
+                            <td>Vault layer (and Market when <code>philidor_fill_market_from_vault</code> is set). Covers audits, timelocks, and curator accountability.</td>
                             <td><a href="https://github.com/DefiRiskAlliance/dra-core/blob/main/providers/philidor.py">providers/philidor.py</a></td>
                         </tr>
                         <tr>
                             <td>Vaultscan</td>
-                            <td>All three layers &mdash; numeric scores from the Vaultscan Supabase index, thresholded against the published S1/S2 cut-offs.</td>
+                            <td>All three layers. Numeric scores from the Vaultscan Supabase index, thresholded against the published S1/S2 cut-offs.</td>
                             <td><a href="https://github.com/DefiRiskAlliance/dra-core/blob/main/providers/vaultscan.py">providers/vaultscan.py</a></td>
                         </tr>
                     </tbody>
                 </table>
 
-                <p>Adapter weights are equal in v3.0 &mdash; the resolution rule is binary, so weights do not currently feed into the merge. They are reserved for future tie-break or confidence work.</p>
+                <p>Adapter weights are equal in v3.0. The resolution rule is binary, so weights don't currently feed into the merge. They are reserved for future tie-break or confidence work.</p>
             </div>
 
             <hr class="divider">
@@ -514,7 +514,7 @@
             <div class="section" id="challenges">
                 <p class="section-label">Public accountability</p>
                 <h2>Challenges &amp; Appeals</h2>
-                <p>Every published verdict is contestable. The DRA team does not own the truth &mdash; raters and reviewers do, and they answer to a public process.</p>
+                <p>Every published verdict is contestable. Raters and reviewers decide what holds, under a public process the team facilitates.</p>
 
                 <h3 style="margin-top:24px;">How to challenge a rating</h3>
                 <ol style="margin: 12px 0 0 24px; line-height: 1.85;">
@@ -525,7 +525,7 @@
 
                 <h3 style="margin-top:24px;">How challenges are resolved</h3>
                 <ul style="margin: 12px 0 0 24px; line-height: 1.85;">
-                    <li><strong>Triage:</strong> the team reviews on a best-effort basis &mdash; this is a public-goods project, not a paid service desk. Severity and clarity of evidence determine prioritisation.</li>
+                    <li><strong>Triage:</strong> the team reviews on a best-effort basis. Severity and clarity of evidence drive prioritisation.</li>
                     <li><strong>Upheld:</strong> a reviewer opens a PR adding a <code>ManualOverride</code> to the entry's <code>StrategyContext</code>, with the challenge issue number as <code>rationale_ref</code>. The engine appends every such override to a JSONL audit log on the next score run, so the change is traceable forever.</li>
                     <li><strong>Rejected:</strong> the issue is closed with a rationale comment. The reasoning is part of the public record and the same evidence cannot be reraised without new material.</li>
                     <li><strong>Inconclusive:</strong> if reviewers can't agree, the issue stays open and the verdict stands until new evidence arrives or a rater changes its attestation.</li>
@@ -536,7 +536,7 @@
                     <li>One <code>criterion_id</code>, one issue.</li>
                     <li>At least one independently verifiable public source (audit report, post-mortem, on-chain transaction, governance proposal).</li>
                     <li>A specific claim about which clause of the criterion description is or isn't met.</li>
-                    <li>No personal attacks on raters &mdash; the system is designed to make raters disagree productively.</li>
+                    <li>Keep raters out of personal attacks. The system is designed for them to disagree productively.</li>
                 </ul>
             </div>
 
