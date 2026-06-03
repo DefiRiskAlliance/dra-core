@@ -1,12 +1,17 @@
 {
-  "generated_at": "2026-05-28T10:52:23+00:00",
+  "generated_at": "2026-06-03T07:18:03+00:00",
   "methodology_version": "v3.0",
   "raters": [
     "pharos",
     "yearn_curation",
     "philidor",
     "vaultscan",
-    "aave_defaults"
+    "aave_defaults",
+    "lido_defaults",
+    "rocketpool_defaults",
+    "euler_defaults",
+    "fluid_defaults",
+    "mellow_defaults"
   ],
   "entries": [
     {
@@ -77,11 +82,11 @@
         "market",
         "vault"
       ],
-      "strategy_stage": 1,
+      "strategy_stage": 0,
       "layer_stages": {
         "asset": 1,
-        "market": 2,
-        "vault": 2
+        "market": 0,
+        "vault": 0
       },
       "matrix": {
         "asset": {
@@ -90,21 +95,128 @@
           "strategy_economics": 2
         },
         "market": {
-          "security": 2,
-          "operations": 2,
-          "strategy_economics": 2
+          "security": 0,
+          "operations": 0,
+          "strategy_economics": 0
         },
         "vault": {
-          "security": 2,
-          "operations": 2,
-          "strategy_economics": 2
+          "security": 0,
+          "operations": 0,
+          "strategy_economics": 0
         }
       },
       "sources": {
-        "pharos": 11,
-        "philidor": 24
+        "pharos": 11
       },
       "unsatisfied": [
+        {
+          "criterion_id": "market.operations.s1.quality_oracle",
+          "layer": "market",
+          "component": "operations",
+          "stage": 1,
+          "description": "Price feeds use a tier-1 oracle (Chainlink, RedStone, Pyth, or equivalent).",
+          "violations": [],
+          "verifications": []
+        },
+        {
+          "criterion_id": "market.operations.s1.timelock_24h",
+          "layer": "market",
+          "component": "operations",
+          "stage": 1,
+          "description": "Privileged operations are gated by a >= 24h timelock.",
+          "violations": [],
+          "verifications": []
+        },
+        {
+          "criterion_id": "market.security.s1.audited",
+          "layer": "market",
+          "component": "security",
+          "stage": 1,
+          "description": "Protocol audited by at least one reputable firm; no unresolved critical findings.",
+          "violations": [],
+          "verifications": []
+        },
+        {
+          "criterion_id": "market.security.s1.lindy_1y",
+          "layer": "market",
+          "component": "security",
+          "stage": 1,
+          "description": "Protocol live at least 1 year without a critical exploit.",
+          "violations": [],
+          "verifications": []
+        },
+        {
+          "criterion_id": "market.strategy_economics.s1.conservative_params",
+          "layer": "market",
+          "component": "strategy_economics",
+          "stage": 1,
+          "description": "LTV, liquidation thresholds, and supply/borrow caps are conservative relative to collateral volatility.",
+          "violations": [],
+          "verifications": []
+        },
+        {
+          "criterion_id": "market.strategy_economics.s1.healthy_utilization",
+          "layer": "market",
+          "component": "strategy_economics",
+          "stage": 1,
+          "description": "Utilisation managed below 95% with caps in place to prevent withdrawal failures.",
+          "violations": [],
+          "verifications": []
+        },
+        {
+          "criterion_id": "vault.operations.s1.public_strategy_doc",
+          "layer": "vault",
+          "component": "operations",
+          "stage": 1,
+          "description": "Strategy and curator are publicly documented; deposit/withdraw flow is transparent.",
+          "violations": [],
+          "verifications": []
+        },
+        {
+          "criterion_id": "vault.operations.s1.timelock_24h",
+          "layer": "vault",
+          "component": "operations",
+          "stage": 1,
+          "description": "Privileged vault operations behind a >= 24h timelock.",
+          "violations": [],
+          "verifications": []
+        },
+        {
+          "criterion_id": "vault.security.s1.audited",
+          "layer": "vault",
+          "component": "security",
+          "stage": 1,
+          "description": "Vault contracts audited; no unresolved critical findings.",
+          "violations": [],
+          "verifications": []
+        },
+        {
+          "criterion_id": "vault.security.s1.no_critical_findings",
+          "layer": "vault",
+          "component": "security",
+          "stage": 1,
+          "description": "No outstanding critical or high-severity vulnerabilities reported by any monitor.",
+          "violations": [],
+          "verifications": []
+        },
+        {
+          "criterion_id": "vault.strategy_economics.s1.curator_accountable",
+          "layer": "vault",
+          "component": "strategy_economics",
+          "stage": 1,
+          "description": "Identified curator with a public track record and accountability mechanism.",
+          "violations": [],
+          "verifications": []
+        },
+        {
+          "criterion_id": "vault.strategy_economics.s1.simple_strategy",
+          "layer": "vault",
+          "component": "strategy_economics",
+          "stage": 1,
+          "description": "Single-market or single-asset deployment with no embedded leverage.",
+          "violations": [],
+          "verifications": []
+        },
         {
           "criterion_id": "asset.security.s2.bug_bounty_active",
           "layer": "asset",
@@ -120,6 +232,114 @@
           "component": "security",
           "stage": 2,
           "description": "Token contract live for at least 3 years with no critical incident.",
+          "violations": [],
+          "verifications": []
+        },
+        {
+          "criterion_id": "market.operations.s2.dual_oracle",
+          "layer": "market",
+          "component": "operations",
+          "stage": 2,
+          "description": "Dual or redundant oracle set-up with sanity checks, deviation thresholds, and fallback paths.",
+          "violations": [],
+          "verifications": []
+        },
+        {
+          "criterion_id": "market.operations.s2.timelock_7d_or_immutable",
+          "layer": "market",
+          "component": "operations",
+          "stage": 2,
+          "description": "Core contracts immutable, or privileged operations behind a >= 7d timelock with a credible multisig (>= 5/9).",
+          "violations": [],
+          "verifications": []
+        },
+        {
+          "criterion_id": "market.security.s2.lindy_3y",
+          "layer": "market",
+          "component": "security",
+          "stage": 2,
+          "description": "Protocol live at least 3 years without a critical exploit.",
+          "violations": [],
+          "verifications": []
+        },
+        {
+          "criterion_id": "market.security.s2.multi_audit_bounty",
+          "layer": "market",
+          "component": "security",
+          "stage": 2,
+          "description": "At least 2 independent audits and an active bug bounty program.",
+          "violations": [],
+          "verifications": []
+        },
+        {
+          "criterion_id": "market.strategy_economics.s2.diversified_collateral",
+          "layer": "market",
+          "component": "strategy_economics",
+          "stage": 2,
+          "description": "Multi-collateral set-up with isolation modes or e-mode segregation for risky assets.",
+          "violations": [],
+          "verifications": []
+        },
+        {
+          "criterion_id": "market.strategy_economics.s2.proven_under_stress",
+          "layer": "market",
+          "component": "strategy_economics",
+          "stage": 2,
+          "description": "Market has survived at least one major dislocation event without accruing bad debt.",
+          "violations": [],
+          "verifications": []
+        },
+        {
+          "criterion_id": "vault.operations.s2.fast_withdrawal",
+          "layer": "vault",
+          "component": "operations",
+          "stage": 2,
+          "description": "Withdrawals are instant or settle within 24h with no caps under normal conditions.",
+          "violations": [],
+          "verifications": []
+        },
+        {
+          "criterion_id": "vault.operations.s2.immutable_or_long_timelock",
+          "layer": "vault",
+          "component": "operations",
+          "stage": 2,
+          "description": "Vault core is immutable or behind a >= 7d timelock; depositors have a meaningful reaction window.",
+          "violations": [],
+          "verifications": []
+        },
+        {
+          "criterion_id": "vault.security.s2.lindy_1y",
+          "layer": "vault",
+          "component": "security",
+          "stage": 2,
+          "description": "Vault live at least 1 year at non-trivial TVL with no security incident.",
+          "violations": [],
+          "verifications": []
+        },
+        {
+          "criterion_id": "vault.security.s2.multi_audit_bounty",
+          "layer": "vault",
+          "component": "security",
+          "stage": 2,
+          "description": "At least 2 independent audits and an active bug bounty.",
+          "violations": [],
+          "verifications": []
+        },
+        {
+          "criterion_id": "vault.strategy_economics.s2.proven_track_record",
+          "layer": "vault",
+          "component": "strategy_economics",
+          "stage": 2,
+          "description": "At least 12 months at strategy capacity without realised loss.",
+          "violations": [],
+          "verifications": []
+        },
+        {
+          "criterion_id": "vault.strategy_economics.s2.transparent_positions",
+          "layer": "vault",
+          "component": "strategy_economics",
+          "stage": 2,
+          "description": "Real-time on-chain breakdown of all positions and counterparties.",
           "violations": [],
           "verifications": []
         }
@@ -282,7 +502,7 @@
         "market": {
           "security": 1,
           "operations": 2,
-          "strategy_economics": 2
+          "strategy_economics": 1
         },
         "vault": {
           "security": 0,
@@ -293,7 +513,7 @@
       "sources": {
         "aave_defaults": 2,
         "pharos": 11,
-        "vaultscan": 16
+        "vaultscan": 12
       },
       "unsatisfied": [
         {
@@ -357,6 +577,24 @@
           "component": "security",
           "stage": 2,
           "description": "At least 2 independent audits and an active bug bounty program.",
+          "violations": [],
+          "verifications": []
+        },
+        {
+          "criterion_id": "market.strategy_economics.s2.diversified_collateral",
+          "layer": "market",
+          "component": "strategy_economics",
+          "stage": 2,
+          "description": "Multi-collateral set-up with isolation modes or e-mode segregation for risky assets.",
+          "violations": [],
+          "verifications": []
+        },
+        {
+          "criterion_id": "market.strategy_economics.s2.proven_under_stress",
+          "layer": "market",
+          "component": "strategy_economics",
+          "stage": 2,
+          "description": "Market has survived at least one major dislocation event without accruing bad debt.",
           "violations": [],
           "verifications": []
         }
