@@ -20,12 +20,23 @@ DEFISCAN_MARKET_STAGES: dict[str, int] = {
     "morpho-blue": 1,
     "spark": 1,
     "fluid": 0,
+    # --- added 2026: per-protocol vault expansion ---
+    "lido": 1,
+    "rocketpool": 1,
+    "euler-v2": 1,
+    "mellow": 1,
 }
 
 DEFISCAN_VAULT_STAGES: dict[str, int] = {
     "morpho-vault": 1,
     "yearn-v3": 1,
     "maker-cdp": 2,
+    # --- added 2026: per-protocol vault expansion ---
+    "lido-wsteth": 1,
+    "rocketpool-reth": 1,
+    "euler-evk-vault": 1,
+    "fluid-vault": 0,
+    "mellow-vault": 1,
 }
 
 MARKET_OPS_S1 = ("market.operations.s1.timelock_24h", "market.operations.s1.quality_oracle")

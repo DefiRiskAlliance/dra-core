@@ -7,8 +7,13 @@ from methodology.criteria import all_criterion_ids
 from providers import (
     DefiPunkdRater,
     DefiscanRater,
+    EulerDefaultsRater,
+    FluidDefaultsRater,
+    LidoDefaultsRater,
+    MellowDefaultsRater,
     PharosRater,
     PhilidorRater,
+    RocketPoolDefaultsRater,
     WebacyRater,
     XerberusPoolsRater,
     XerberusRater,
@@ -25,6 +30,11 @@ def test_supported_criteria_subset_of_registry():
         DefiscanRater(),
         DefiPunkdRater(),
         XerberusPoolsRater(),
+        LidoDefaultsRater(),
+        RocketPoolDefaultsRater(),
+        EulerDefaultsRater(),
+        FluidDefaultsRater(),
+        MellowDefaultsRater(),
     ):
         sup = rater.supported_criteria()
         assert sup, f"{rater.name} declares no criteria"
@@ -219,3 +229,79 @@ def test_xerberus_pools_low_score_violates_stage_one():
 def test_xerberus_pools_shares_organization_with_xerberus():
     # Engine COI filter treats both raters as the same organisation.
     assert XerberusPoolsRater().organization == "xerberus"
+
+
+# ----- Protocol defaults (Lido, RP, Euler, Fluid, Mellow) -------------------
+
+
+def test_lido_defaults_match_only_lido_prefix():
+    assert LidoDefaultsRater().attest(StrategyContext(mode="B")) == []
+    assert LidoDefaultsRater().attest(StrategyContext(mode="B", vaultscan_id="aave-usdc")) == []
+    atts = LidoDefaultsRater().attest(StrategyContext(mode="B", vaultscan_id="lido-wsteth"))
+    assert atts
+    by_id = {a.criterion_id for a in atts}
+    # Hits both market and vault layers + reaches Stage 2 on both
+    assert "market.security.s1.audited" in by_id
+    assert "market.security.s2.lindy_3y" in by_id
+    assert "vault.security.s2.lindy_1y" in by_id
+    assert all(a.verdict == "verified" and a.component == "security" for a in atts)
+
+
+def test_rocketpool_defaults_accept_rp_alias():
+    atts1 = RocketPoolDefaultsRater().attest(StrategyContext(mode="B", vaultscan_id="rocketpool-reth"))
+    atts2 = RocketPoolDefaultsRater().attest(StrategyContext(mode="B", vaultscan_id="rp-reth"))
+    assert atts1 and atts2
+    assert {a.criterion_id for a in atts1} == {a.criterion_id for a in atts2}
+
+
+def test_euler_defaults_skip_lindy_3y():
+    atts = EulerDefaultsRater().attest(StrategyContext(mode="B", vaultscan_id="euler-evk-usdc"))
+    by_id = {a.criterion_id for a in atts}
+    assert "market.security.s1.lindy_1y" in by_id
+    assert "market.security.s2.lindy_3y" not in by_id  # v2 is too young + v1 hack history
+
+
+def test_fluid_defaults_only_s1_security():
+    atts = FluidDefaultsRater().attest(StrategyContext(mode="B", vaultscan_id="fluid-usdc"))
+    by_id = {a.criterion_id for a in atts}
+    assert "market.security.s1.audited" in by_id
+    # No s2 attestations — conservative on bug-bounty / multi-audit claim
+    assert not any(".s2." in cid for cid in by_id)
+
+
+def test_mellow_defaults_omit_no_critical_findings_per_curator():
+    atts = MellowDefaultsRater().attest(StrategyContext(mode="B", vaultscan_id="mellow-re7-lrt"))
+    by_id = {a.criterion_id for a in atts}
+    assert "vault.security.s1.audited" in by_id
+    # Curator-specific claim is intentionally NOT made by framework defaults
+    assert "vault.security.s1.no_critical_findings" not in by_id
+
+
+def test_defiscan_new_protocol_slugs_are_recognised():
+    rater = DefiscanRater()
+    for slug, expected_stage in (
+        ("lido", 1), ("rocketpool", 1), ("euler-v2", 1), ("mellow", 1),
+    ):
+        ctx = StrategyContext(mode="C", defiscan_market_slug=slug)
+        atts = rater.attest(ctx)
+        assert atts, f"defiscan missed {slug}"
+        if expected_stage >= 1:
+            assert any(
+                a.criterion_id == "market.operations.s1.timelock_24h" and a.verdict == "verified"
+                for a in atts
+            ), slug
+
+
+def test_defiscan_new_vault_slugs_are_recognised():
+    rater = DefiscanRater()
+    for slug in ("lido-wsteth", "rocketpool-reth", "euler-evk-vault", "mellow-vault"):
+        ctx = StrategyContext(mode="B", defiscan_vault_slug=slug)
+        atts = rater.attest(ctx)
+        assert any(
+            a.criterion_id == "vault.operations.s1.timelock_24h" and a.verdict == "verified"
+            for a in atts
+        ), slug
+    # Fluid-vault is explicitly Stage 0 in the curated map → files a violation
+    ctx = StrategyContext(mode="B", defiscan_vault_slug="fluid-vault")
+    atts = rater.attest(ctx)
+    assert any(a.verdict == "violated" for a in atts)
