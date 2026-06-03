@@ -1,6 +1,6 @@
 """Defaults rater for Fluid (Instadapp's lending and smart-vault protocol).
 
-Fluid's security page (https://docs.fluid.io/security) lists audits by
+Fluid's security page (https://docs.fluid.instadapp.io/audits-and-security.html) lists audits by
 MixBytes, StateMind, and Cantina competitions covering the lending pool,
 liquidity layer, and the smart-vault collateral/debt logic. Mainnet launch:
 2024-03-12.
@@ -19,7 +19,7 @@ from methodology.entities import StrategyContext
 from methodology.types import CriterionAttestation
 from providers.base import RaterBase
 
-FLUID_SECURITY = "https://docs.fluid.io/security"
+FLUID_SECURITY = "https://docs.fluid.instadapp.io/audits-and-security.html"
 FLUID_LAUNCH_DATE = "2024-03-12"
 
 
