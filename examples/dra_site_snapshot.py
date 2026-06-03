@@ -85,6 +85,7 @@ from methodology import COMPONENTS, DRAEngine, DRAResult, LAYERS, StrategyContex
 from methodology.compose import applicable_layers
 from providers import (
     AaveDefaultsRater,
+    DefiscanRater,
     EulerDefaultsRater,
     FluidDefaultsRater,
     LidoDefaultsRater,
@@ -221,30 +222,101 @@ ENTRIES: list[dict[str, Any]] = [
             "https://raw.githubusercontent.com/yearn/risk-score/master/reports/report/yearn-yvusd.md"
         ),
     },
-    # ---------------------------------------------------------------------
-    # TEMPLATE — uncomment to add a new entry. Required fields: id, label,
-    # mode. Match a default-rater prefix in ``vaultscan_id`` to pull in the
-    # protocol's baked-in security facts (lido-*, rocketpool-* | rp-*,
-    # euler-*, fluid-*, mellow-*). Set ``philidor_network`` + ``vault_address``
-    # to hit Philidor, ``pharos_stablecoin_id`` to hit Pharos, etc.
-    #
-    # {
-    #     "id": "lido-wsteth-eth",
-    #     "label": "Lido · wstETH",
-    #     "yield_blurb": "...",
-    #     "mode": "B",
-    #     "asset_is_stablecoin": False,
-    #     "vaultscan_id": "lido-wsteth-1-0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
-    # },
-    # {
-    #     "id": "rocketpool-reth-eth",
-    #     "label": "Rocket Pool · rETH",
-    #     "yield_blurb": "...",
-    #     "mode": "B",
-    #     "asset_is_stablecoin": False,
-    #     "vaultscan_id": "rocketpool-reth-1-0xae78736cd615f374d3085123a210448e74fc6393",
-    # },
-    # ---------------------------------------------------------------------
+    {
+        # wstETH wrapper: 0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0
+        "id": "lido-wsteth",
+        "label": "Lido · wstETH",
+        "yield_blurb": (
+            "wstETH is the wrapped, non-rebasing form of Lido's stETH receipt token. "
+            "Yield comes from validators staking the underlying ETH on the Beacon Chain "
+            "(consensus + execution rewards plus priority-fee tips and MEV). Lido takes "
+            "a 10% protocol fee on staking rewards, split between node operators and the DAO."
+        ),
+        "mode": "B",
+        "asset_is_stablecoin": False,
+        "philidor_network": "ethereum",
+        "vault_address": "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0",
+        "vaultscan_id": "lido-wsteth-1-0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
+        "defiscan_market_slug": "lido",
+        "defiscan_vault_slug": "lido-wsteth",
+    },
+    {
+        # rETH token: 0xae78736cd615f374d3085123a210448e74fc6393
+        "id": "rocketpool-reth",
+        "label": "Rocket Pool · rETH",
+        "yield_blurb": (
+            "rETH is Rocket Pool's non-rebasing liquid staking token, redeemable for a "
+            "growing amount of ETH as staking rewards accrue. Yield is the weighted "
+            "average return from Rocket Pool's distributed node-operator set (8 ETH "
+            "minipools and the original 16 ETH variants), net of the commission paid "
+            "to node operators."
+        ),
+        "mode": "B",
+        "asset_is_stablecoin": False,
+        "philidor_network": "ethereum",
+        "vault_address": "0xae78736Cd615f374D3085123A210448E74Fc6393",
+        "vaultscan_id": "rocketpool-reth-1-0xae78736cd615f374d3085123a210448e74fc6393",
+        "defiscan_market_slug": "rocketpool",
+        "defiscan_vault_slug": "rocketpool-reth",
+    },
+    {
+        # Euler v2 Prime USDC vault — protocol-level entry. Specific vault
+        # address omitted (curator picks the EVK vault to onboard); the
+        # euler_defaults rater + Defiscan map still fire on the vaultscan_id
+        # prefix and the defiscan_*_slug fields.
+        "id": "euler-prime-usdc",
+        "label": "Euler v2 · Prime USDC",
+        "yield_blurb": (
+            "USDC supplied into an Euler v2 'Prime' EVK vault — a curator-managed lending "
+            "vault built on the post-2024 Euler Vault Kit. Yield is the variable borrow "
+            "APY paid by borrowers in the vault, scaled by utilisation and net of the "
+            "vault's reserve fee."
+        ),
+        "mode": "A",
+        "asset_is_stablecoin": True,
+        "pharos_stablecoin_id": "usdc-circle",
+        "vaultscan_id": "euler-prime-usdc-1",
+        "defiscan_market_slug": "euler-v2",
+        "defiscan_vault_slug": "euler-evk-vault",
+    },
+    {
+        # Fluid USDC vault — protocol-level entry. Specific Fluid vault
+        # address omitted; fluid_defaults + Defiscan map (which currently
+        # rates Fluid operations at Stage 0) fire on the vaultscan_id prefix.
+        "id": "fluid-usdc",
+        "label": "Fluid · USDC",
+        "yield_blurb": (
+            "USDC deposits into Fluid's lending layer (Instadapp's Fluid protocol). "
+            "Yield is the variable supply APY paid by overcollateralised borrowers across "
+            "Fluid's smart-vault markets, scaled by utilisation and net of the protocol's "
+            "reserve factor."
+        ),
+        "mode": "A",
+        "asset_is_stablecoin": True,
+        "pharos_stablecoin_id": "usdc-circle",
+        "vaultscan_id": "fluid-usdc-1",
+        "defiscan_market_slug": "fluid",
+        "defiscan_vault_slug": "fluid-vault",
+    },
+    {
+        # Mellow vault framework — protocol-level entry. Curator and specific
+        # LRT vault address omitted; mellow_defaults attests framework-level
+        # security only (no per-curator claims) and Defiscan supplies the
+        # operations stage on the vaultscan_id prefix.
+        "id": "mellow-re7-resolv",
+        "label": "Mellow · Re7 Resolv Restaked ETH",
+        "yield_blurb": (
+            "An LRT vault on the Mellow framework operated by the Re7 curator, depositing "
+            "ETH into Symbiotic restaking through the Resolv ecosystem. Yield is the "
+            "blended return from base ETH staking, Symbiotic restaking rewards, and "
+            "curator-selected operator incentives, net of Re7's performance fee."
+        ),
+        "mode": "B",
+        "asset_is_stablecoin": False,
+        "vaultscan_id": "mellow-re7-resolv-lrt-1",
+        "defiscan_market_slug": "mellow",
+        "defiscan_vault_slug": "mellow-vault",
+    },
 ]
 
 
@@ -310,6 +382,10 @@ def main() -> None:
             PhilidorRater(),
             YearnCurationRater(),
             AaveDefaultsRater(),
+            # Defiscan stage anchor — drives market.operations / vault.operations
+            # based on the curated slug map in providers/defiscan.py. Triggered
+            # by ctx.defiscan_market_slug / ctx.defiscan_vault_slug.
+            DefiscanRater(),
             # Protocol defaults — match on ctx.vaultscan_id prefix
             # (lido-*, rocketpool-* | rp-*, euler-*, fluid-*, mellow-*).
             LidoDefaultsRater(),
@@ -337,7 +413,7 @@ def main() -> None:
         "methodology_version": "v3.0",
         "raters": [
             "pharos", "yearn_curation", "philidor", "vaultscan",
-            "aave_defaults",
+            "aave_defaults", "defiscan",
             "lido_defaults", "rocketpool_defaults", "euler_defaults",
             "fluid_defaults", "mellow_defaults",
         ],
