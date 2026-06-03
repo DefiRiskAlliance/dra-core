@@ -79,7 +79,7 @@ def test_staleness_clock_is_overridable():
 def test_naive_timestamp_is_assumed_utc():
     """Naive datetime should not silently break the comparison."""
     cid = "asset.security.s1.audited"
-    naive = datetime.utcnow()
+    naive = datetime.now()  # tzinfo=None
     a = _att(cid, "verified", timestamp=naive)
     assert a.timestamp.tzinfo is timezone.utc
 

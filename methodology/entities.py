@@ -80,6 +80,12 @@ class StrategyContext:
 
     vaultscan_id: str | None = None
 
+    defipunkd_protocol_id: str | None = None
+    """Identifier used by DeFiPunk'd to key a protocol's transparency grades."""
+
+    xerberus_pool_id: str | None = None
+    """Identifier used by Xerberus's beta /risk/pools view (pool-level scores)."""
+
     philidor_fill_market_from_vault: bool = False
 
     manual_attestations: list[CriterionAttestation] = field(default_factory=list)
