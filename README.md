@@ -141,6 +141,53 @@ python3 -m http.server --directory docs 8000
 # open http://localhost:8000
 ```
 
-Deploy via GitHub Pages: **Settings → Pages → Build from branch → `main` /
-`docs`**. No CI is required for v1; the snapshot is regenerated locally and
-committed alongside any methodology or rater changes.
+## Deployment
+
+The live site at [defiriskalliance.github.io](https://defiriskalliance.github.io/)
+is published from a separate repo (`DefiRiskAlliance/defiriskalliance.github.io`)
+that only holds the contents of `docs/` flattened to the root. A GitHub Actions
+workflow ([`.github/workflows/publish-docs.yml`](.github/workflows/publish-docs.yml))
+syncs the two repos automatically.
+
+**Shipping a new vault rating now looks like this:**
+
+```bash
+# 1. Add your entry to ENTRIES in examples/dra_site_snapshot.py
+# 2. Regenerate the snapshot
+python3 -m examples.dra_site_snapshot
+# 3. Commit and push to main
+git add examples/dra_site_snapshot.py docs/ratings.json
+git commit -m "ratings: add <vault name>"
+git push origin main
+```
+
+That's it. The workflow runs on push, subtree-splits `docs/`, and pushes it
+to the Pages repo. GitHub Pages rebuilds in ~30–60 seconds.
+
+### One-time setup for the publish workflow
+
+The workflow needs to push to a different repo, which requires a token:
+
+1. Generate a [fine-grained Personal Access Token](https://github.com/settings/personal-access-tokens/new)
+   - Resource owner: `DefiRiskAlliance`
+   - Repository access: `DefiRiskAlliance/defiriskalliance.github.io` only
+   - Permission: **Contents → Read and write**
+2. On `DefiRiskAlliance/dra-core`, go to **Settings → Secrets and variables → Actions → New repository secret**:
+   - Name: `PAGES_PUBLISH_TOKEN`
+   - Value: the PAT from step 1
+
+Once the secret is set, every push to `main` that touches `docs/` triggers a
+deploy. You can also run it manually from the Actions tab via the
+"Run workflow" button (`workflow_dispatch`).
+
+### Manual fallback
+
+If CI is broken, the manual command still works:
+
+```bash
+git subtree split --prefix=docs -b dra-publish
+git push dra dra-publish:main
+```
+
+(Assumes a remote named `dra` pointing at
+`https://github.com/DefiRiskAlliance/defiriskalliance.github.io.git`.)

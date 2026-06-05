@@ -1,0 +1,80 @@
+name: Publish docs to defiriskalliance.github.io
+
+# Auto-publishes the contents of docs/ to the org Pages repo whenever
+# anything inside docs/ changes on main. Replaces the manual
+# `git subtree split --prefix=docs && git push dra dra-publish:main`
+# workflow that used to be required to ship a new vault rating.
+#
+# How it works:
+#   1. Checkout dra-core with full history (subtree-split needs it).
+#   2. Run `git subtree split --prefix=docs HEAD` to produce a commit
+#      that contains exactly docs/ flattened to the root.
+#   3. Push that commit to DefiRiskAlliance/defiriskalliance.github.io
+#      main using a PAT stored as the PAGES_PUBLISH_TOKEN secret.
+#
+# One-time setup the maintainer must do (see README "Deployment"):
+#   - Create a fine-grained Personal Access Token with
+#     `Contents: read & write` scoped to ONLY the
+#     DefiRiskAlliance/defiriskalliance.github.io repo.
+#   - Store it as the repository secret `PAGES_PUBLISH_TOKEN` on this
+#     repo (dra-core).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - '.github/workflows/publish-docs.yml'
+  workflow_dispatch: {}
+
+concurrency:
+  group: publish-docs
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout dra-core
+        uses: actions/checkout@v4
+        with:
+          # subtree-split walks history; shallow clones break it
+          fetch-depth: 0
+
+      - name: Configure git identity for the split commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Subtree-split docs/ to a flat commit
+        id: split
+        run: |
+          SHA=$(git subtree split --prefix=docs HEAD)
+          if [ -z "$SHA" ]; then
+            echo "subtree split produced no commit; failing"
+            exit 1
+          fi
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "Split commit: $SHA"
+          git log --oneline -1 "$SHA"
+
+      - name: Push to defiriskalliance.github.io main
+        env:
+          PAGES_PUBLISH_TOKEN: ${{ secrets.PAGES_PUBLISH_TOKEN }}
+        run: |
+          if [ -z "$PAGES_PUBLISH_TOKEN" ]; then
+            echo "::error::PAGES_PUBLISH_TOKEN secret is not configured."
+            echo "Set it in Settings -> Secrets -> Actions on this repo."
+            exit 1
+          fi
+          git push \
+            "https://x-access-token:${PAGES_PUBLISH_TOKEN}@github.com/DefiRiskAlliance/defiriskalliance.github.io.git" \
+            "${{ steps.split.outputs.sha }}:refs/heads/main"
+
+      - name: Note about GitHub Pages build
+        run: |
+          echo "Pushed. GitHub Pages will rebuild defiriskalliance.github.io within ~30-60 seconds."
+          echo "Watch the build at: https://github.com/DefiRiskAlliance/defiriskalliance.github.io/actions"
