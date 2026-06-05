@@ -166,15 +166,28 @@ to the Pages repo. GitHub Pages rebuilds in ~30–60 seconds.
 
 ### One-time setup for the publish workflow
 
-The workflow needs to push to a different repo, which requires a token:
+The workflow pushes to a different repo, which needs SSH credentials. We use
+a per-repo **Deploy Key** rather than a Personal Access Token because deploy
+keys bypass org PAT policy and are scoped to a single repo.
 
-1. Generate a [fine-grained Personal Access Token](https://github.com/settings/personal-access-tokens/new)
-   - Resource owner: `DefiRiskAlliance`
-   - Repository access: `DefiRiskAlliance/defiriskalliance.github.io` only
-   - Permission: **Contents → Read and write**
-2. On `DefiRiskAlliance/dra-core`, go to **Settings → Secrets and variables → Actions → New repository secret**:
-   - Name: `PAGES_PUBLISH_TOKEN`
-   - Value: the PAT from step 1
+1. Generate an SSH keypair locally:
+   ```bash
+   ssh-keygen -t ed25519 -C "dra-publish-docs@github-actions" \
+       -f /tmp/dra-publish-docs -N ""
+   ```
+2. On `DefiRiskAlliance/defiriskalliance.github.io`, go to
+   **Settings → Deploy keys → Add deploy key**:
+   - Title: `dra-core publish-docs`
+   - Key: paste the contents of `/tmp/dra-publish-docs.pub`
+   - **Tick** *Allow write access*
+3. On `DefiRiskAlliance/dra-core`, go to
+   **Settings → Secrets and variables → Actions → New repository secret**:
+   - Name: `PAGES_DEPLOY_KEY`
+   - Secret: paste the contents of `/tmp/dra-publish-docs` (the private key)
+4. Delete the local copies once both halves are stored:
+   ```bash
+   rm /tmp/dra-publish-docs /tmp/dra-publish-docs.pub
+   ```
 
 Once the secret is set, every push to `main` that touches `docs/` triggers a
 deploy. You can also run it manually from the Actions tab via the

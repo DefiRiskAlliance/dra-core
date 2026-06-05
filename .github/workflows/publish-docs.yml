@@ -10,14 +10,19 @@ name: Publish docs to defiriskalliance.github.io
 #   2. Run `git subtree split --prefix=docs HEAD` to produce a commit
 #      that contains exactly docs/ flattened to the root.
 #   3. Push that commit to DefiRiskAlliance/defiriskalliance.github.io
-#      main using a PAT stored as the PAGES_PUBLISH_TOKEN secret.
+#      main via SSH, using a deploy key stored as the PAGES_DEPLOY_KEY
+#      secret on this repo.
 #
 # One-time setup the maintainer must do (see README "Deployment"):
-#   - Create a fine-grained Personal Access Token with
-#     `Contents: read & write` scoped to ONLY the
-#     DefiRiskAlliance/defiriskalliance.github.io repo.
-#   - Store it as the repository secret `PAGES_PUBLISH_TOKEN` on this
-#     repo (dra-core).
+#   - Generate an SSH keypair (ed25519 recommended).
+#   - Add the PUBLIC key as a Deploy Key on
+#     DefiRiskAlliance/defiriskalliance.github.io with "Allow write
+#     access" ticked.
+#   - Add the PRIVATE key as the repository secret `PAGES_DEPLOY_KEY`
+#     on this repo (dra-core).
+#
+# Deploy keys are per-repo and bypass org PAT policy entirely, which
+# is why this works where a fine-grained PAT may not.
 
 on:
   push:
@@ -61,18 +66,29 @@ jobs:
           echo "Split commit: $SHA"
           git log --oneline -1 "$SHA"
 
-      - name: Push to defiriskalliance.github.io main
+      - name: Install SSH deploy key
         env:
-          PAGES_PUBLISH_TOKEN: ${{ secrets.PAGES_PUBLISH_TOKEN }}
+          PAGES_DEPLOY_KEY: ${{ secrets.PAGES_DEPLOY_KEY }}
         run: |
-          if [ -z "$PAGES_PUBLISH_TOKEN" ]; then
-            echo "::error::PAGES_PUBLISH_TOKEN secret is not configured."
-            echo "Set it in Settings -> Secrets -> Actions on this repo."
+          if [ -z "$PAGES_DEPLOY_KEY" ]; then
+            echo "::error::PAGES_DEPLOY_KEY secret is not configured."
+            echo "See README 'Deployment' for the one-time setup."
             exit 1
           fi
-          git push \
-            "https://x-access-token:${PAGES_PUBLISH_TOKEN}@github.com/DefiRiskAlliance/defiriskalliance.github.io.git" \
-            "${{ steps.split.outputs.sha }}:refs/heads/main"
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          # Use printf, not echo, to preserve newlines exactly.
+          printf '%s\n' "$PAGES_DEPLOY_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan github.com > ~/.ssh/known_hosts 2>/dev/null
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Push to defiriskalliance.github.io main via SSH
+        run: |
+          GIT_SSH_COMMAND="ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o UserKnownHostsFile=~/.ssh/known_hosts" \
+            git push \
+              git@github.com:DefiRiskAlliance/defiriskalliance.github.io.git \
+              "${{ steps.split.outputs.sha }}:refs/heads/main"
 
       - name: Note about GitHub Pages build
         run: |
