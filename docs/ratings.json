@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-03T07:23:59+00:00",
+  "generated_at": "2026-06-05T12:31:01+00:00",
   "methodology_version": "v3.0",
   "raters": [
     "pharos",
@@ -63,7 +63,7 @@
           "violations": [
             {
               "source": "vaultscan",
-              "evidence": "vaultscan.market_score=4.285566043488343 (morpho:vault)"
+              "evidence": "vaultscan.market_score=4.201792627905382 (morpho:vault)"
             }
           ],
           "verifications": [
@@ -82,7 +82,7 @@
           "violations": [
             {
               "source": "vaultscan",
-              "evidence": "vaultscan.market_score=4.285566043488343 (morpho:vault)"
+              "evidence": "vaultscan.market_score=4.201792627905382 (morpho:vault)"
             }
           ],
           "verifications": [
@@ -101,7 +101,7 @@
           "violations": [
             {
               "source": "vaultscan",
-              "evidence": "vaultscan.market_score=4.285566043488343 (morpho:vault)"
+              "evidence": "vaultscan.market_score=4.201792627905382 (morpho:vault)"
             }
           ],
           "verifications": [
@@ -120,7 +120,7 @@
           "violations": [
             {
               "source": "vaultscan",
-              "evidence": "vaultscan.market_score=4.285566043488343 (morpho:vault)"
+              "evidence": "vaultscan.market_score=4.201792627905382 (morpho:vault)"
             }
           ],
           "verifications": [
