@@ -144,63 +144,48 @@ python3 -m http.server --directory docs 8000
 ## Deployment
 
 The live site at [defiriskalliance.github.io](https://defiriskalliance.github.io/)
-is published from a separate repo (`DefiRiskAlliance/defiriskalliance.github.io`)
-that only holds the contents of `docs/` flattened to the root. A GitHub Actions
-workflow ([`.github/workflows/publish-docs.yml`](.github/workflows/publish-docs.yml))
-syncs the two repos automatically.
+is published from a separate repo
+(`DefiRiskAlliance/defiriskalliance.github.io`) that holds the contents of
+`docs/` flattened to the root. Deployment is manual today (org PAT policy and
+deploy-key restrictions ruled out the GitHub Actions options we tried;
+revisit if those open up).
 
-**Shipping a new vault rating now looks like this:**
+Two git remotes are expected:
+
+| Remote | URL | Role |
+|---|---|---|
+| `core` | `https://github.com/DefiRiskAlliance/dra-core.git` | Source (this repo) |
+| `dra`  | `https://github.com/DefiRiskAlliance/defiriskalliance.github.io.git` | Live site |
+
+Set them up once:
+
+```bash
+git remote add core https://github.com/DefiRiskAlliance/dra-core.git
+git remote add dra  https://github.com/DefiRiskAlliance/defiriskalliance.github.io.git
+```
+
+**Shipping a new vault rating:**
 
 ```bash
 # 1. Add your entry to ENTRIES in examples/dra_site_snapshot.py
-# 2. Regenerate the snapshot
-python3 -m examples.dra_site_snapshot
-# 3. Commit and push to main
-git add examples/dra_site_snapshot.py docs/ratings.json
-git commit -m "ratings: add <vault name>"
-git push origin main
+# 2. Run the publisher with --snapshot to regenerate ratings.json,
+#    commit, push to core, subtree-split docs/, push to dra, and
+#    wait for Pages to rebuild.
+./scripts/publish.sh --snapshot
 ```
 
-That's it. The workflow runs on push, subtree-splits `docs/`, and pushes it
-to the Pages repo. GitHub Pages rebuilds in ~30–60 seconds.
-
-### One-time setup for the publish workflow
-
-The workflow pushes to a different repo, which needs SSH credentials. We use
-a per-repo **Deploy Key** rather than a Personal Access Token because deploy
-keys bypass org PAT policy and are scoped to a single repo.
-
-1. Generate an SSH keypair locally:
-   ```bash
-   ssh-keygen -t ed25519 -C "dra-publish-docs@github-actions" \
-       -f /tmp/dra-publish-docs -N ""
-   ```
-2. On `DefiRiskAlliance/defiriskalliance.github.io`, go to
-   **Settings → Deploy keys → Add deploy key**:
-   - Title: `dra-core publish-docs`
-   - Key: paste the contents of `/tmp/dra-publish-docs.pub`
-   - **Tick** *Allow write access*
-3. On `DefiRiskAlliance/dra-core`, go to
-   **Settings → Secrets and variables → Actions → New repository secret**:
-   - Name: `PAGES_DEPLOY_KEY`
-   - Secret: paste the contents of `/tmp/dra-publish-docs` (the private key)
-4. Delete the local copies once both halves are stored:
-   ```bash
-   rm /tmp/dra-publish-docs /tmp/dra-publish-docs.pub
-   ```
-
-Once the secret is set, every push to `main` that touches `docs/` triggers a
-deploy. You can also run it manually from the Actions tab via the
-"Run workflow" button (`workflow_dispatch`).
-
-### Manual fallback
-
-If CI is broken, the manual command still works:
+For a docs-only change (HTML / CSS edits, no rater output changes):
 
 ```bash
-git subtree split --prefix=docs -b dra-publish
-git push dra dra-publish:main
+# commit your docs/ edits first, then:
+./scripts/publish.sh
 ```
 
-(Assumes a remote named `dra` pointing at
-`https://github.com/DefiRiskAlliance/defiriskalliance.github.io.git`.)
+What the script does, in order:
+
+1. Optionally regenerates `docs/ratings.json` via `examples/dra_site_snapshot.py`
+   (`--snapshot` flag) and commits it.
+2. Refuses to continue if anything under `docs/` is still uncommitted.
+3. Pushes `main` to `core`.
+4. Subtree-splits `docs/` into a flat commit, pushes it to `dra` `main`.
+5. Polls the GitHub Pages build via `gh` and prints status.
